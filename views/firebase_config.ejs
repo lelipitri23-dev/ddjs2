@@ -1,0 +1,146 @@
+<script type="module">
+  import {
+    initializeApp
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth,
+    signInWithPopup,
+    GoogleAuthProvider,
+    signOut,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getAnalytics
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+  // IMPORT FIRESTORE
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    updateDoc,
+    arrayUnion,
+    arrayRemove
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyCHiHs2SMted6vvfFCOSVZ5_MFrTWBQKio",
+  authDomain: "doujinshilifelogin.firebaseapp.com",
+  projectId: "doujinshilifelogin",
+  storageBucket: "doujinshilifelogin.firebasestorage.app",
+  messagingSenderId: "1075856658940",
+  appId: "1:1075856658940:web:e93433e7f3383a78a3e279",
+  measurementId: "G-2TGQH1L1LT"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app); // Inisialisasi Database
+  const provider = new GoogleAuthProvider();
+
+  // Expose Auth ke Global Window agar bisa dicek di file lain
+  window.auth = auth;
+  window.db = db;
+
+  // --- FUNGSI LOGIN / LOGOUT ---
+  window.doGoogleLogin = () => {
+    signInWithPopup(auth, provider).then(() => window.location.reload())
+    .catch((err) => alert("Login Gagal: " + err.message));
+  };
+
+  window.doLogout = () => {
+    if (confirm("Yakin ingin keluar?")) {
+      signOut(auth).then(() => window.location.reload());
+    }
+  };
+
+  // --- FUNGSI FIRESTORE HELPER (Global) ---
+
+  // 1. Tambah Bookmark ke Firestore
+  window.addBookmarkFirestore = async (mangaData) => {
+    const user = auth.currentUser;
+    if (!user) return;
+    const userRef = doc(db, "users", user.uid);
+    try {
+      // Gunakan setDoc dengan merge:true agar tidak menimpa data lain jika ada
+      await setDoc(userRef, {
+        bookmarks: arrayUnion(mangaData)
+      }, {
+        merge: true
+      });
+      console.log("Bookmark saved to Firestore");
+    } catch (e) {
+      console.error("Error saving bookmark: ", e);
+    }
+  };
+
+  // 2. Hapus Bookmark dari Firestore
+  window.removeBookmarkFirestore = async (mangaData) => {
+    const user = auth.currentUser;
+    if (!user) return;
+    const userRef = doc(db, "users", user.uid);
+    try {
+      await updateDoc(userRef, {
+        bookmarks: arrayRemove(mangaData)
+      });
+      console.log("Bookmark removed from Firestore");
+    } catch (e) {
+      console.error("Error removing bookmark: ", e);
+    }
+  };
+
+  // 3. Ambil Semua Bookmark Firestore
+  window.getBookmarksFirestore = async () => {
+    const user = auth.currentUser;
+    if (!user) return [];
+    const docSnap = await getDoc(doc(db, "users", user.uid));
+    if (docSnap.exists()) {
+      return docSnap.data().bookmarks || [];
+    } else {
+      return [];
+    }
+  };
+
+  // --- LISTENER STATUS USER ---
+  onAuthStateChanged(auth, (user) => {
+    // ... (Logika UI Navbar sama seperti sebelumnya) ...
+    const navLoginBtn = document.getElementById('nav-login-btn');
+    const navUserMenu = document.getElementById('nav-user-menu');
+    const navUserAvatar = document.getElementById('nav-user-avatar');
+    const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+    const profileName = document.getElementById('profile-name');
+    const profileEmail = document.getElementById('profile-email');
+    const profileAvatar = document.getElementById('profile-avatar');
+    const profileLoginBtn = document.getElementById('profile-login-btn');
+    const profileLogoutBtn = document.getElementById('profile-logout-btn');
+
+    if (user) {
+      if (navLoginBtn) navLoginBtn.classList.add('hidden');
+      if (navUserMenu) navUserMenu.classList.remove('hidden');
+      if (navUserAvatar) navUserAvatar.src = user.photoURL;
+      if (mobileLogoutBtn) mobileLogoutBtn.classList.remove('hidden');
+
+      if (profileName) profileName.innerText = user.displayName;
+      if (profileEmail) profileEmail.innerText = user.email;
+      if (profileAvatar) profileAvatar.src = user.photoURL;
+      if (profileLoginBtn) profileLoginBtn.classList.add('hidden');
+      if (profileLogoutBtn) profileLogoutBtn.classList.remove('hidden');
+
+      // Trigger event custom agar halaman Profile tau user sudah siap
+      window.dispatchEvent(new Event('user_ready'));
+
+    } else {
+      if (navLoginBtn) navLoginBtn.classList.remove('hidden');
+      if (navUserMenu) navUserMenu.classList.add('hidden');
+      if (mobileLogoutBtn) mobileLogoutBtn.classList.add('hidden');
+
+      if (profileName) profileName.innerText = "Tamu (Guest)";
+      if (profileEmail) profileEmail.innerText = "Login untuk menyimpan data permanen.";
+      if (profileAvatar) profileAvatar.src = "https://ui-avatars.com/api/?name=Guest&background=random";
+      if (profileLoginBtn) profileLoginBtn.classList.remove('hidden');
+      if (profileLogoutBtn) profileLogoutBtn.classList.add('hidden');
+
+      window.dispatchEvent(new Event('user_guest'));
+    }
+  });
+</script>

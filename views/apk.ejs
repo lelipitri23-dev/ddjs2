@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unduh APK <%= typeof siteName !== 'undefined' ? siteName : 'Doujindesu' %> - Versi Terbaru</title>
+    
+    <meta name="description" content="<%= typeof desc !== 'undefined' ? desc : 'Download Aplikasi Baca Komik Terbaik Bahasa Indonesia.' %>">
+    <meta name="theme-color" content="#ff5722">
+    
+    <meta name="keywords" content="<%= typeof siteName !== 'undefined' ? siteName : 'Doujindesu' %> apk, download doujindesu, baca manga android, aplikasi baca komik, doujinshi indonesia, apk v6.0.0">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#ff5722">
+    <meta name="author" content="<%= typeof siteName !== 'undefined' ? siteName : 'Doujindesu' %>">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %>/app">
+    <meta property="og:title" content="Unduh APK <%= typeof siteName !== 'undefined' ? siteName : 'Doujindesu' %> - Versi Terbaru">
+    <meta property="og:description" content="Download Aplikasi resmi versi terbaru. Baca komik lebih cepat, hemat kuota, dan bebas iklan.">
+    <meta property="og:site_name" content="<%= typeof siteName !== 'undefined' ? siteName : 'Doujindesu' %>">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:image" content="/favicon.png"> <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %>/app">
+    <meta property="twitter:title" content="Unduh APK <%= typeof siteName !== 'undefined' ? siteName : 'Doujindesu' %>">
+    <meta property="twitter:description" content="Download Aplikasi resmi versi terbaru. Baca komik lebih cepat dan hemat kuota.">
+    <meta property="twitter:image" content="/favicon.png">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#ff5722',
+                        'primary-dark': '#e64a19',
+                        dark: '#0f0f0f',
+                        surface: '#1e1e1e',
+                        'surface-light': '#2d2d2d',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MobileApplication",
+      "name": "<%= typeof siteName !== 'undefined' ? siteName : 'Doujindesu' %>",
+      "operatingSystem": "Android",
+      "applicationCategory": "EntertainmentApplication",
+      "fileSize": "50MB",
+      "softwareVersion": "6.0.0",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "IDR", "availability": "https://schema.org/InStock" },
+      "downloadUrl": "https://cdn1.nekodrive.web.id/6.0.0.apk",
+      "screenshot": "<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %>/favicon.png",
+      "author": { "@type": "Organization", "name": "<%= typeof siteName !== 'undefined' ? siteName : 'Doujindesu' %> Team" }
+    }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f0f0f; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ff5722; }
+    </style>
+</head>
+
+<body class="bg-dark text-gray-200 font-sans min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-white">
+
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-2000"></div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-lg mx-auto p-4 md:p-6 flex flex-col min-h-screen">
+        
+        <nav class="flex items-center justify-between mb-8">
+            <a href="/" class="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition group">
+                <div class="w-8 h-8 rounded-full bg-surface-light flex items-center justify-center group-hover:bg-primary group-hover:text-white transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </div>
+                <span>Kembali</span>
+            </a>
+        </nav>
+
+        <main class="bg-surface/60 backdrop-blur-xl border border-white/5 rounded-3xl p-6 md:p-8 shadow-2xl flex-grow">
+            
+            <div class="flex flex-col items-center text-center mb-8">
+                <div class="relative group">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-primary to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
+                    <div class="relative w-24 h-24 bg-surface rounded-2xl flex items-center justify-center border border-white/10 shadow-xl">
+                        <span class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-primary to-orange-300">DJ</span>
+                    </div>
+                </div>
+
+                <h1 class="text-3xl font-bold mt-5 text-white tracking-tight">
+                    <%= typeof siteName !== 'undefined' ? siteName : 'Doujindesu' %>
+                </h1>
+                
+                <div class="flex items-center gap-2 mt-2">
+                    <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full border border-primary/20">
+                        v6.0.0
+                    </span>
+                    <span class="text-xs text-gray-500">•</span>
+                    <span class="text-xs text-gray-400">Update Terbaru</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-8">
+                <div class="bg-surface-light/50 p-3 rounded-2xl border border-white/5 text-center">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Ukuran</p>
+                    <p class="font-semibold text-white">~50 MB</p>
+                </div>
+                <div class="bg-surface-light/50 p-3 rounded-2xl border border-white/5 text-center">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Android</p>
+                    <p class="font-semibold text-white">5.0+</p>
+                </div>
+                <div class="bg-surface-light/50 p-3 rounded-2xl border border-white/5 text-center">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Lisensi</p>
+                    <p class="font-semibold text-green-400">Gratis</p>
+                </div>
+                <div class="bg-surface-light/50 p-3 rounded-2xl border border-white/5 text-center">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Server</p>
+                    <p class="font-semibold text-blue-400">Nekodrive</p>
+                </div>
+            </div>
+
+            <a href="https://cdn1.nekodrive.web.id/6.0.0.apk" class="group relative w-full flex items-center justify-center gap-3 bg-gradient-to-r from-primary to-primary-dark hover:to-orange-600 text-white font-bold text-lg py-4 px-6 rounded-2xl shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-primary/40 mb-10 overflow-hidden">
+                <div class="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700 skew-x-12"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>Download Sekarang</span>
+            </a>
+
+            <div class="space-y-8">
+                
+                <div>
+                    <h3 class="flex items-center gap-2 text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Cara Install
+                    </h3>
+                    
+                    <div class="relative pl-4 border-l-2 border-white/10 space-y-6">
+                        <div class="relative">
+                            <span class="absolute -left-[21px] top-1 h-3 w-3 rounded-full bg-primary ring-4 ring-dark"></span>
+                            <p class="text-sm text-gray-300">Download file APK melalui tombol di atas.</p>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute -left-[21px] top-1 h-3 w-3 rounded-full bg-surface-light ring-4 ring-dark border border-gray-600"></span>
+                            <p class="text-sm text-gray-300">Jika muncul peringatan keamanan, pilih <strong>"Tetap Download"</strong> atau <strong>"Install Anyway"</strong>.</p>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute -left-[21px] top-1 h-3 w-3 rounded-full bg-surface-light ring-4 ring-dark border border-gray-600"></span>
+                            <p class="text-sm text-gray-300">Buka file dan izinkan <strong>"Sumber Tidak Dikenal"</strong> di pengaturan jika diminta.</p>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute -left-[21px] top-1 h-3 w-3 rounded-full bg-surface-light ring-4 ring-dark border border-gray-600"></span>
+                            <p class="text-sm text-gray-300">Tunggu proses selesai, dan selamat membaca!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="flex items-center gap-2 text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Apa yang Baru?
+                    </h3>
+                    
+                    <div class="bg-surface-light/30 rounded-2xl p-4 md:p-5">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3 text-sm text-gray-300">
+                                <span class="mt-1.5 h-1.5 w-1.5 rounded-full bg-green-500 flex-shrink-0"></span>
+                                <span>Pembaruan Library API (Lebih Cepat).</span>
+                            </li>
+                            <li class="flex items-start gap-3 text-sm text-gray-300">
+                                <span class="mt-1.5 h-1.5 w-1.5 rounded-full bg-green-500 flex-shrink-0"></span>
+                                <span>Dukungan Penuh Android 12 & 13.</span>
+                            </li>
+                            <li class="flex items-start gap-3 text-sm text-gray-300">
+                                <span class="mt-1.5 h-1.5 w-1.5 rounded-full bg-green-500 flex-shrink-0"></span>
+                                <span>Fix Login via Email & Google Drive Picker.</span>
+                            </li>
+                            <li class="flex items-start gap-3 text-sm text-gray-300">
+                                <span class="mt-1.5 h-1.5 w-1.5 rounded-full bg-green-500 flex-shrink-0"></span>
+                                <span>Perbaikan Layout Komentar di HP Layar Poni.</span>
+                            </li>
+                            <li class="flex items-start gap-3 text-sm text-gray-300">
+                                <span class="mt-1.5 h-1.5 w-1.5 rounded-full bg-green-500 flex-shrink-0"></span>
+                                <span>Placeholder baru untuk gambar yang gagal dimuat.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <footer class="mt-8 text-center text-xs text-gray-500 pb-4">
+            <p>&copy; <%= new Date().getFullYear() %> <%= typeof siteName !== 'undefined' ? siteName : 'Doujindesu' %>.</p>
+            <p>Dibuat dengan ❤️ untuk komunitas.</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>

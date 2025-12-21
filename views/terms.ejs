@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<%- include('layout_head') %>
+<body class="flex flex-col min-h-screen bg-gray-900 text-gray-200">
+    
+    <%- include('navbar') %>
+
+    <main class="flex-grow container mx-auto px-4 py-12 max-w-4xl">
+        <h1 class="text-3xl font-bold text-white mb-8 border-b border-gray-700 pb-4">Terms of Service</h1>
+        
+        <div class="space-y-6 text-gray-300 leading-relaxed text-sm md:text-base">
+            <section>
+                <h2 class="text-xl font-bold text-white mb-2">1. Penerimaan Syarat</h2>
+                <p>Dengan mengakses dan menggunakan <%= siteName %>, Anda menyetujui untuk terikat oleh Syarat dan Ketentuan ini. Jika Anda tidak setuju dengan bagian mana pun dari syarat ini, mohon untuk tidak menggunakan layanan kami.</p>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-bold text-white mb-2">2. Disclaimer Konten (Penting)</h2>
+                <p class="mb-2"><%= siteName %> adalah layanan pengindeksan otomatis (aggregator). Kami <strong>TIDAK</strong> menyimpan file gambar komik di server kami sendiri.</p>
+                <ul class="list-disc list-inside ml-4 mt-2 space-y-1 text-gray-400">
+                    <li>Semua konten disediakan oleh pihak ketiga yang tidak berafiliasi dengan kami.</li>
+                    <li>Kami tidak memiliki hak cipta atas komik, manga, atau doujinshi yang ditampilkan.</li>
+                    <li>Hak cipta sepenuhnya milik pembuat (author), penerbit, dan artist masing-masing.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-bold text-white mb-2">3. Batasan Usia</h2>
+                <p>Website ini mungkin mengandung materi yang ditujukan untuk audiens dewasa (18+). Dengan mengakses situs ini, Anda menyatakan bahwa Anda telah cukup umur sesuai dengan hukum yang berlaku di negara Anda untuk melihat konten tersebut.</p>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-bold text-white mb-2">4. DMCA & Takedown</h2>
+                <p>Kami menghormati hak kekayaan intelektual. Jika Anda adalah pemegang hak cipta dan menemukan konten Anda terindeks di situs kami tanpa izin, silakan hubungi kami melalui halaman Contact untuk permintaan penghapusan tautan (takedown).</p>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-bold text-white mb-2">5. Perubahan Layanan</h2>
+                <p>Kami berhak untuk mengubah, menangguhkan, atau menghentikan layanan kapan saja tanpa pemberitahuan sebelumnya.</p>
+            </section>
+        </div>
+    </main>
+
+    <%- include('footer') %>
+</body>
+</html>

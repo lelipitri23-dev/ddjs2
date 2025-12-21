@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="id">
+<%- include('layout_head') %>
+<body class="flex flex-col min-h-screen">
+
+  <%- include('navbar') %>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Book",
+  "name": "<%= manga.title %>",
+  "alternateName": "<%= manga.alternativeTitle || '' %>",
+  "image": "<%= manga.thumb %>",
+  "description": "<%= manga.synopsis ? manga.synopsis.replace(/[\r\n]+/g, ' ') : '' %>",
+  "author": {
+    "@type": "Person",
+    "name": "<%= manga.metadata.author || 'Unknown' %>"
+  },
+  "genre": <%- JSON.stringify(manga.tags || []) %>,
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "<%= manga.metadata.rating || 0 %>",
+    "bestRating": "10",
+    "worstRating": "0",
+    "ratingCount": "<%= manga.views > 0 ? manga.views : 1 %>" 
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "<%= typeof siteName !== 'undefined' ? siteName : 'DoujinShi' %>",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %>/image/logo-doujindesuXXX.png"
+    }
+  },
+  "datePublished": "<%= manga.metadata.created || '' %>"
+}
+</script>
+
+  <main class="flex-grow container mx-auto px-4 py-8 max-w-5xl">
+    <nav class="text-sm text-gray-400 mb-4">
+      <a href="/" class="hover:text-blue-400">Home</a> <span class="mx-2">/</span>
+      <span class="text-white"><%= manga.title %></span>
+    </nav>
+
+    <div class="bg-gray-800 rounded-xl overflow-hidden shadow-2xl flex flex-col md:flex-row">
+      <!-- BAGIAN KIRI: Cover & Metadata -->
+      <div class="md:w-1/3 bg-gray-900 p-6 flex flex-col items-center md:items-start text-center md:text-left border-r border-gray-800">
+
+        <div class="w-48 aspect-[3/4] rounded-lg overflow-hidden shadow-lg mb-6 border-4 border-gray-700 mx-auto md:mx-0">
+          <% if (manga.thumb) {
+            %>
+            <img src="<%= manga.thumb %>" alt="<%= manga.title %>" class="w-full h-full object-cover">
+            <%
+          } else {
+            %>
+            <div class="w-full h-full bg-gray-700 flex items-center justify-center text-6xl">
+            </div>
+            <%
+          } %>
+        </div>
+
+        <h1 class="text-2xl font-bold text-white mb-2 leading-tight"><%= manga.title %></h1>
+
+        <p class="text-blue-400 mb-4 font-medium text-sm text-center md:text-left">
+          <%= manga.alternativeTitle || '-' %>
+        </p>
+
+        <button id="btn-bookmark" class="mb-6 bg-yellow-500 hover:bg-yellow-600 text-white text-sm px-5 py-2 rounded-full font-semibold flex items-center gap-2 transition shadow-md w-full md:w-auto justify-center mx-auto md:mx-0">
+          <span id="bookmark-icon">🔖</span>
+          <span id="bookmark-text">Bookmark</span>
+        </button>
+
+
+
+
+
+        <div class="w-full bg-gray-800 rounded-lg p-4 space-y-3 text-sm">
+
+          <!-- STATUS -->
+          <div class="flex justify-between border-b border-gray-700 pb-2">
+            <span class="text-gray-400">Status</span>
+            <a href="/status/<%= manga?.metadata?.status ? manga.metadata.status.toLowerCase(): '' %>"
+              class="text-white hover:text-blue-400 font-medium">
+              <%= manga?.metadata?.status || '-' %>
+            </a>
+          </div>
+
+          <!-- SERIES -->
+          <div class="flex justify-between border-b border-gray-700 pb-2">
+            <span class="text-gray-400">Series</span>
+            <span class="text-white font-medium text-right truncate w-1/2">
+              <%= manga?.metadata?.series || '-' %>
+            </span>
+          </div>
+
+          <!-- TYPE -->
+          <div class="flex justify-between border-b border-gray-700 pb-2">
+            <span class="text-gray-400">Type</span>
+            <a
+              href="/type/<%= manga?.metadata?.type
+              ? (typeof manga.metadata.type === 'object'
+                ? manga.metadata.type.type.toLowerCase(): manga.metadata.type.toLowerCase()): '' %>"
+              class="text-white hover:text-blue-400 font-medium">
+
+              <%= manga?.metadata?.type
+              ? (typeof manga.metadata.type === 'object'
+                ? manga.metadata.type.type: manga.metadata.type): '-' %>
+            </a>
+          </div>
+
+          <!-- GROUP -->
+          <div class="flex justify-between border-b border-gray-700 pb-2">
+            <span class="text-gray-400">Group</span>
+            <span class="text-white font-medium text-right truncate w-1/2">
+              <%= manga?.metadata?.group || '-' %>
+            </span>
+          </div>
+
+          <!-- AUTHOR -->
+          <div class="flex justify-between border-b border-gray-700 pb-2">
+            <span class="text-gray-400">Author</span>
+            <span class="text-white font-medium text-right truncate w-1/2">
+              <%= manga?.metadata?.author || '-' %>
+            </span>
+          </div>
+
+          <!-- RATING -->
+          <div class="flex justify-between border-b border-gray-700 pb-2">
+            <span class="text-gray-400">Rating</span>
+            <span class="text-yellow-400 font-bold">
+              <%= manga?.metadata?.rating || '-' %>
+            </span>
+          </div>
+
+          <!-- RELEASE DATE -->
+          <div class="flex justify-between">
+            <span class="text-gray-400">Rilis</span>
+            <span class="text-white font-medium">
+              <%= manga?.metadata?.created || '-' %>
+            </span>
+          </div>
+        </div>
+
+        <!-- TAGS -->
+        <div class="mt-6 flex flex-wrap gap-2 justify-center md:justify-start w-full">
+          <% (manga.tags || []).forEach(tag => {
+            %>
+            <a href="/genre/<%= tag.replace(/\s+/g, '-').toLowerCase() %>"
+              class="bg-gray-800 text-xs px-3 py-1.5 rounded-full text-gray-300 hover:bg-blue-600 hover:text-white transition border border-gray-700">
+              <%= tag %>
+            </a>
+            <%
+          }) %>
+        </div>
+      </div>
+      <div class="md:w-2/3 p-6">
+        <% if (manga.synopsis) {
+          %>
+          <div class="mb-8">
+            <h2 class="text-lg font-bold text-white mb-2 border-l-4 border-blue-500 pl-3">Sinopsis</h2>
+            <p class="text-gray-300 text-sm leading-relaxed">
+              <%= manga.synopsis %>
+            </p>
+          </div>
+          <%
+        } %>
+
+        <h2 class="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-2 flex items-center justify-between">
+          <span> Daftar Chapter</span>
+          <span class="text-xs bg-blue-900 text-blue-200 px-2 py-1 rounded"><%= chapters.length %> Chapter</span>
+        </h2>
+
+        <div class="flex flex-col gap-2 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+          <% if (chapters.length > 0) {
+            %>
+            <% chapters.forEach(chap => {
+              %>
+              <!-- MODIFIKASI: Menambahkan onclick, data-slug, dan class 'chapter-item' -->
+              <a href="/read/<%= manga.slug %>/<%= chap.slug %>"
+                onclick="saveHistory('<%= manga.slug %>', '<%= chap.slug %>')"
+                data-slug="<%= chap.slug %>"
+                class="chapter-item flex justify-between items-center bg-gray-750 hover:bg-gray-700 p-3 rounded-lg border border-gray-700 hover:border-blue-500 transition group">
+
+                <div class="flex flex-col">
+                  <span class="font-medium text-gray-200 group-hover:text-blue-400 text-sm transition">
+                    Chapter <%= chap.title %>
+                  </span>
+                  <span class="text-[10px] text-gray-500 mt-0.5">Bahasa Indonesia</span>
+                </div>
+
+                <!-- MODIFIKASI: Menambahkan class 'status-badge' -->
+                <span class="status-badge text-xs bg-gray-700 group-hover:bg-blue-600 text-gray-300 group-hover:text-white px-3 py-1 rounded-full transition">
+                  Baca
+                </span>
+              </a>
+              <%
+            }) %>
+            <%
+          } else {
+            %>
+            <div class="text-center py-10 bg-gray-900/50 rounded-lg border border-dashed border-gray-700">
+              <p class="text-gray-500">
+                Belum ada chapter tersedia.
+              </p>
+            </div>
+            <%
+          } %>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%- include('footer') %>
+
+  <!-- SCRIPT HISTORY (LOCALSTORAGE) -->
+  <script>
+    const MANGA_SLUG = "<%= manga.slug %>";
+
+    // Fungsi: Simpan ke LocalStorage saat diklik
+    function saveHistory(mangaSlug, chapterSlug) {
+      try {
+        let history = JSON.parse(localStorage.getItem('read_history')) || {};
+
+        if (!history[mangaSlug]) {
+          history[mangaSlug] = [];
+        }
+
+        // Cek duplikasi sebelum push
+        if (!history[mangaSlug].includes(chapterSlug)) {
+          history[mangaSlug].push(chapterSlug);
+          localStorage.setItem('read_history', JSON.stringify(history));
+        }
+      } catch (e) {
+        console.error("Gagal menyimpan history", e);
+      }
+    }
+
+    // Fungsi: Load history saat halaman dibuka
+    document.addEventListener("DOMContentLoaded", () => {
+      try {
+        const history = JSON.parse(localStorage.getItem('read_history')) || {};
+        const readChapters = history[MANGA_SLUG];
+
+        if (readChapters && readChapters.length > 0) {
+          readChapters.forEach(slug => {
+            // Cari elemen chapter berdasarkan data-slug
+            const element = document.querySelector(`.chapter-item[data-slug="${slug}"]`);
+
+            if (element) {
+              // UBAH TAMPILAN JIKA SUDAH DIBACA
+
+              // 1. Ubah warna container (lebih gelap/pudar)
+              element.classList.remove('bg-gray-750');
+              element.classList.add('bg-gray-800', 'border-gray-600', 'opacity-60');
+
+              // 2. Ubah Badge tombol jadi Hijau "Sudah Dibaca"
+              const badge = element.querySelector('.status-badge');
+              if (badge) {
+                badge.innerText = 'Sudah Dibaca';
+                badge.classList.remove('bg-gray-700', 'group-hover:bg-blue-600', 'text-gray-300');
+                badge.classList.add('bg-green-900', 'text-green-400', 'border', 'border-green-800');
+              }
+            }
+          });
+        }
+      } catch (e) {
+        console.error("Gagal memuat history",
+          e);
+      }
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('btn-bookmark');
+      const icon = document.getElementById('bookmark-icon');
+      const text = document.getElementById('bookmark-text');
+
+      const currentManga = {
+        slug: "<%= manga.slug %>",
+        title: "<%= manga.title %>",
+        thumb: "<%= manga.thumb %>"
+      };
+
+      const STORAGE_KEY = 'doujin_bookmarks';
+
+      // Fungsi Cek Status (Hybrid: Cek LocalStorage atau Firestore)
+      async function checkStatus() {
+        let isBookmarked = false;
+
+        // Tunggu Firebase Auth Ready
+        const user = window.auth?.currentUser;
+
+        if (user) {
+          // --- MODE ONLINE (FIRESTORE) ---
+          // Kita ambil list dari Firestore (bisa di-cache/optimasi nanti)
+          const cloudBookmarks = await window.getBookmarksFirestore();
+          isBookmarked = cloudBookmarks.some(b => b.slug === currentManga.slug);
+        } else {
+          // --- MODE OFFLINE (LOCALSTORAGE) ---
+          const localBookmarks = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+          isBookmarked = localBookmarks.some(b => b.slug === currentManga.slug);
+        }
+
+        updateUI(isBookmarked);
+      }
+
+      function updateUI(isBookmarked) {
+        if (isBookmarked) {
+          text.innerText = "Tersimpan";
+          btn.classList.replace('bg-yellow-500', 'bg-red-600');
+          btn.classList.replace('hover:bg-yellow-600', 'hover:bg-red-700');
+          icon.innerText = "✅";
+        } else {
+          text.innerText = "Bookmark";
+          btn.classList.replace('bg-red-600', 'bg-yellow-500');
+          btn.classList.replace('hover:bg-red-700', 'hover:bg-yellow-600');
+          icon.innerText = "🔖";
+        }
+      }
+
+      // Handle Klik
+      btn.addEventListener('click', async () => {
+        const user = window.auth?.currentUser;
+
+        if (user) {
+          // --- LOGIC FIRESTORE ---
+          const cloudBookmarks = await window.getBookmarksFirestore();
+          const exists = cloudBookmarks.some(b => b.slug === currentManga.slug);
+
+          if (exists) {
+            // Karena arrayRemove butuh object persis, kita cari object aslinya di array
+            const itemToRemove = cloudBookmarks.find(b => b.slug === currentManga.slug);
+            await window.removeBookmarkFirestore(itemToRemove);
+            updateUI(false);
+          } else {
+            await window.addBookmarkFirestore(currentManga);
+            updateUI(true);
+          }
+
+        } else {
+          // --- LOGIC LOCALSTORAGE ---
+          let bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+          const isBookmarked = bookmarks.some(b => b.slug === currentManga.slug);
+
+          if (isBookmarked) {
+            bookmarks = bookmarks.filter(b => b.slug !== currentManga.slug);
+            updateUI(false);
+          } else {
+            bookmarks.push(currentManga);
+            updateUI(true);
+          }
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
+        }
+      });
+
+      // Tunggu sampai Auth Firebase selesai inisialisasi
+      // Kita listen event custom dari firebase_config.ejs
+      window.addEventListener('user_ready',
+        () => checkStatus());
+      window.addEventListener('user_guest',
+        () => checkStatus());
+
+      // Cek langsung (jika script ini jalan setelah auth ready)
+      setTimeout(checkStatus,
+        1000);
+    });
+  </script>
+
+
+</body>
+</html>

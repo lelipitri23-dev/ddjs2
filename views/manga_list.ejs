@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<%- include('layout_head') %>
+<body class="flex flex-col min-h-screen bg-gray-900 text-gray-200">
+    
+    <%- include('navbar') %>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        
+        <div class="flex justify-between items-end mb-8 border-b border-gray-700 pb-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-2 border-l-4 border-blue-500 pl-4">
+                    Daftar Komik
+                </h1>
+                <p class="text-gray-400 text-sm pl-5">Menampilkan semua komik diurutkan dari A sampai Z</p>
+            </div>
+            <span class="text-xs bg-gray-800 text-gray-400 px-3 py-1 rounded-full border border-gray-700">
+                Total: <%= typeof totalPages !== 'undefined' ? totalPages * 24 : '...' %>+ Judul
+            </span>
+        </div>
+
+        <% if (mangas && mangas.length > 0) { %>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-2 md:gap-6">
+                <% mangas.forEach(manga => { %>
+                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg border border-gray-800 hover:border-blue-500/50 hover:shadow-blue-500/10 transition duration-300 group">
+                        <a href="/manga/<%= manga.slug %>" class="block h-full">
+                            
+                            <div class="h-56 md:h-64 bg-gray-700 relative overflow-hidden">
+                                <% if (manga.thumb) { %>
+                                    <img src="<%= manga.thumb %>" alt="<%= manga.title %>" 
+                                         class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                                <% } else { %>
+                                    <div class="w-full h-full flex items-center justify-center text-3xl">📚</div>
+                                <% } %>
+
+                                <div class="absolute top-2 left-2">
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded shadow-sm text-white
+                                        <%= (manga.metadata.type && manga.metadata.type.type === 'Doujinshi') ? 'bg-red-600' : 'bg-blue-600' %>">
+                                        <%= manga.metadata.type ? (typeof manga.metadata.type === 'object' ? manga.metadata.type.type : manga.metadata.type) : 'Manga' %>
+                                    </span>
+                                </div>
+
+                                <div class="absolute bottom-0 w-full bg-gradient-to-t from-black via-black/70 to-transparent p-2 pt-6">
+                                    <span class="text-yellow-400 text-xs font-bold flex items-center gap-1">
+                                        ⭐ <%= manga.metadata.rating %>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="p-3">
+                                <h3 class="text-xs md:text-sm font-bold text-white line-clamp-2 mb-2 group-hover:text-blue-400 transition" title="<%= manga.title %>">
+                                    <%= manga.title %>
+                                </h3>
+                                <div class="flex justify-between items-center border-t border-gray-700 pt-2">
+                                    <span class="text-[10px] text-gray-400"><%= manga.metadata.status %></span>
+                                    <span class="text-[10px] text-blue-300">Detail &rarr;</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <% }) %>
+            </div>
+
+            <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+                <div class="flex flex-wrap justify-center items-center gap-2 mt-12 mb-8">
+                    <% if (currentPage > 1) { %>
+                        <a href="/manga-list?page=<%= currentPage - 1 %>" class="bg-gray-800 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition border border-gray-700 text-sm">
+                            &laquo; Prev
+                        </a>
+                    <% } %>
+
+                    <div class="bg-gray-800 px-4 py-2 rounded-lg border border-gray-700 text-sm">
+                        Halaman <span class="text-blue-400 font-bold"><%= currentPage %></span> dari <%= totalPages %>
+                    </div>
+
+                    <% if (currentPage < totalPages) { %>
+                        <a href="/manga-list?page=<%= currentPage + 1 %>" class="bg-gray-800 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition border border-gray-700 text-sm">
+                            Next &raquo;
+                        </a>
+                    <% } %>
+                </div>
+            <% } %>
+
+        <% } else { %>
+            <div class="text-center py-32 bg-gray-800 rounded-xl border border-dashed border-gray-700">
+                <div class="text-6xl mb-4">📭</div>
+                <h3 class="text-xl font-bold text-white">Belum Ada Komik</h3>
+                <p class="text-gray-400 mt-2">Database masih kosong.</p>
+            </div>
+        <% } %>
+
+    </main>
+
+    <%- include('footer') %>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id">
+<%- include('layout_head') %>
+<body class="bg-gray-900 text-gray-300 flex flex-col min-h-screen">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+    "@type": "ListItem",
+    "position": 1,
+    "name": "Home",
+    "item": "<%= typeof siteUrl !== 'undefined' ? siteUrl : 'http://localhost:3000' %>"
+  },{
+    "@type": "ListItem",
+    "position": 2,
+    "name": "<%= manga.title %>",
+    "item": "<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %>/manga/<%= manga.slug %>"
+  },{
+    "@type": "ListItem",
+    "position": 3,
+    "name": "Chapter <%= chapter.title %>",
+    "item": "<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %>/read/<%= manga.slug %>/<%= chapter.slug %>"
+  }]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "<%= manga.title %> Chapter <%= chapter.title %>",
+  "description": "Baca <%= manga.title %> Chapter <%= chapter.title %> Bahasa Indonesia.",
+  "primaryImageOfPage": {
+    "@type": "ImageObject",
+    "url": "<%= manga.thumb %>"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "<%= typeof siteName !== 'undefined' ? siteName : 'DoujinShi' %>",
+    "url": "<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %>"
+  }
+}
+</script>
+
+  <nav class="bg-gray-800 border-b border-gray-700 p-3 sticky top-0 z-50 shadow-lg" style="height: 64px;">
+    <div class="container mx-auto max-w-4xl flex justify-between items-center h-full">
+      <a href="/manga/<%= manga.slug %>" class="text-sm bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded flex items-center gap-1 transition">
+        <span>&larr;</span> <span class="hidden sm:inline">Detail</span>
+      </a>
+
+      <h1 class="text-sm md:text-base font-bold text-white truncate max-w-[40%] text-center px-2">
+        Chapter <%= chapter.title %>
+      </h1>
+   
+      <div class="flex items-center gap-2">
+        <a href="/" class="text-sm bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition hidden sm:inline-block">Home</a>
+        
+        <button id="modeToggleBtn" title="Ganti mode baca" class="text-sm bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded flex items-center gap-2 transition border border-gray-600">
+            <span id="modeIcon" class="text-xs">V</span>
+            <span id="modeLabel" class="hidden sm:inline text-xs">Vertical</span>
+        </button>
+
+        <button onclick="toggleSidebar()" class="text-sm bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded flex items-center gap-2 transition border border-gray-600">
+            <span class="hidden sm:inline text-xs mr-1">List</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-grow bg-black pb-10">
+
+    <div id="reader-area"
+         class="container mx-auto max-w-3xl min-h-screen cursor-pointer tap-highlight-transparent
+                text-[0px] leading-none flex flex-col gap-0">
+      <% if (chapter.images && chapter.images.length > 0) { %>
+        <% chapter.images.forEach((img, index) => { %>
+          <div class="page-wrap relative w-full flex items-center justify-center bg-black m-0 p-0 text-[0px] leading-none">
+            <div class="absolute inset-0 flex flex-col items-center justify-center z-0 text-gray-500">
+              <svg class="animate-spin h-10 w-10 mb-3 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span class="text-xs">Memuat Gambar <%= index+1 %>...</span>
+            </div>
+
+            <img
+              src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+              data-src="<%= Buffer.from(img).toString('base64') %>"
+              class="vertical-img relative z-10 w-full h-auto block max-w-none m-0 p-0 
+                     protected-img opacity-0 transition-opacity duration-500"
+              alt="<%= manga.title %> Chapter <%= chapter.title %> Page <%= index+1 %>"
+              loading="lazy"
+              onload="this.classList.remove('opacity-0')">
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="flex flex-col items-center justify-center h-screen text-center px-4">
+          <div class="text-5xl mb-4">⚠️</div>
+          <p class="text-xl text-red-400 font-bold">Gambar Tidak Tersedia</p>
+          <p class="text-sm text-gray-500 mt-2">Silakan refresh atau lapor admin.</p>
+        </div>
+      <% } %>
+    </div>
+    <div id="slide-area" class="hidden w-full bg-black fixed top-[64px] left-0 right-0 bottom-0 z-40">
+      <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+      
+      <div class="swiper-container w-full h-[calc(100vh-64px)]">
+        <div class="swiper-wrapper h-full">
+          <% if (chapter.images && chapter.images.length > 0) { %>
+            <% chapter.images.forEach((img, index) => { %>
+              <div class="swiper-slide w-full h-full flex items-center justify-center bg-black">
+                <img
+                  src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                  data-src="<%= Buffer.from(img).toString('base64') %>"
+                  class="slide-img relative z-10 max-w-full max-h-full object-contain block mx-auto p-0 opacity-0 transition-opacity duration-500"
+                  style="width: auto; height: auto;"
+                  alt="<%= manga.title %> Chapter <%= chapter.title %> Page <%= index+1 %>"
+                />
+              </div>
+            <% }) %>
+           <% } %>
+        </div>
+        <div class="swiper-button-prev text-white"></div>
+        <div class="swiper-button-next text-white"></div>
+        <div class="swiper-pagination"></div>
+      </div>
+      <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    </div>
+
+    <div class="max-w-3xl mx-auto mt-8 px-4 mb-8">
+      <div class="bg-gray-800 p-4 rounded-xl flex justify-between items-center shadow-lg border border-gray-700">
+         <% if (prevChap) { %>
+          <a href="/read/<%= manga.slug %>/<%= prevChap.slug %>" class="bg-gray-700 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium transition flex items-center gap-2">
+            &larr; Prev
+          </a>
+        <% } else { %>
+          <button disabled class="bg-gray-900 text-gray-600 px-3 py-1.5 rounded-md text-sm cursor-not-allowed border border-gray-800">Prev</button>
+        <% } %>
+
+        <a href="/manga/<%= manga.slug %>" class="text-gray-400 hover:text-white text-sm font-medium hidden sm:block">
+          Daftar Chapter
+        </a>
+
+        <% if (nextChap) { %>
+          <a href="/read/<%= manga.slug %>/<%= nextChap.slug %>" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-md text-sm font-medium transition flex items-center gap-2">
+            Next &rarr;
+          </a>
+        <% } else { %>
+          <button disabled class="bg-gray-900 text-gray-600 px-3 py-1.5 rounded-md text-sm cursor-not-allowed border border-gray-800">Next</button>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="max-w-3xl mx-auto px-4">
+      <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 text-center shadow-md">
+        <h2 class="text-lg font-bold text-white mb-3">
+          Baca <%= manga.title %> Chapter <%= chapter.title %> Bahasa Indonesia
+        </h2>
+        <p class="text-sm text-gray-400 leading-relaxed">
+          Baca manga <strong><%= manga.title %> Chapter <%= chapter.title %></strong> hanya di <strong><%= siteName %></strong>. Update tercepat dan lengkap.
+        </p>
+
+        <div class="mt-4 pt-4 border-t border-gray-800 flex flex-wrap justify-center gap-2 text-xs text-gray-500">
+          <span>Tags:</span>
+          <% if (manga.tags && manga.tags.length > 0) { %>
+            <% manga.tags.slice(0, 5).forEach(tag => { %>
+              <span class="bg-gray-800 px-2 py-1 rounded"><%= tag %></span>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="chapter-sidebar" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity opacity-0" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="absolute top-0 right-0 w-80 max-w-[85vw] h-full bg-gray-900 border-l border-gray-700 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col" id="sidebar-panel">
+      
+      <div class="p-4 border-b border-gray-800 flex justify-between items-center bg-gray-850">
+         <h3 class="font-bold text-white text-lg">Daftar Chapter</h3>
+        <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white p-1 rounded hover:bg-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex-grow overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
+       <% if (manga.chapters && manga.chapters.length > 0) { %>
+            <div class="grid gap-1">
+                <% manga.chapters.forEach(chap => { 
+                    const isActive = String(chap.slug) === String(chapter.slug);
+                %>
+                <a href="/read/<%= manga.slug %>/<%= chap.slug %>" 
+                   class="block px-4 py-3 rounded-lg text-sm transition-colors border border-transparent
+                   <%= isActive ? 'bg-blue-900/40 border-blue-600 text-blue-100' : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white' %>">
+                    <div class="flex justify-between items-center">
+                        <span class="font-medium">Chapter <%= chap.title %></span>
+                        <% if (isActive) { %>
+                            <span class="text-[10px] bg-blue-600 text-white px-1.5 py-0.5 rounded">Current</span>
+                        <% } %>
+                    </div>
+                    <% if (chap.date) { %>
+                        <div class="text-xs text-gray-500 mt-1"><%= chap.date %></div>
+                    <% } %>
+                </a>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <p class="text-center text-gray-500 mt-10">Data chapter tidak tersedia.</p>
+        <% } %>
+       </div>
+    </div>
+  </div>
+
+  <%- include('footer') %>
+
+  <script>
+    // Sidebar Toggle
+    function toggleSidebar() {
+      const sidebar = document.getElementById('chapter-sidebar');
+      const panel = document.getElementById('sidebar-panel');
+      const overlay = document.getElementById('sidebar-overlay');
+      const body = document.body;
+      if (sidebar.classList.contains('hidden')) {
+        sidebar.classList.remove('hidden');
+        body.classList.add('overflow-hidden');
+        setTimeout(() => {
+          overlay.classList.remove('opacity-0');
+          panel.classList.remove('translate-x-full');
+        }, 10);
+      } else {
+        overlay.classList.add('opacity-0');
+        panel.classList.add('translate-x-full');
+        setTimeout(() => {
+          sidebar.classList.add('hidden');
+          body.classList.remove('overflow-hidden');
+        }, 300);
+      }
+    }
+
+    // Tap to scroll for vertical mode
+    document.addEventListener('DOMContentLoaded', () => {
+      const readerArea = document.getElementById('reader-area');
+      if (readerArea) {
+        readerArea.addEventListener('click', (e) => {
+          if (e.detail === 0) return;
+          const scrollAmount = window.innerHeight * 0.75;
+          window.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+        });
+      }
+    });
+
+    // LAZY LOAD + DECODE for vertical images
+    function initVerticalLazy() {
+      const vImages = document.querySelectorAll('img.vertical-img');
+      if (!('IntersectionObserver' in window)) {
+        // fallback
+        vImages.forEach(img => {
+          if (img.dataset.src) {
+            try { img.src = atob(img.dataset.src); img.removeAttribute('data-src'); }
+            catch(e){ console.error('decode fail', e); }
+          }
+        });
+        return;
+      }
+
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            const enc = img.getAttribute('data-src');
+            if (enc) {
+              try {
+                 img.src = atob(enc);
+                img.removeAttribute('data-src');
+              } catch(e) { console.error("Gagal decode gambar", e); }
+            }
+            img.onload = () => img.classList.remove('opacity-0');
+            obs.unobserve(img);
+          }
+        });
+      }, { rootMargin: '400px 0px', threshold: 0.01 });
+      vImages.forEach(img => observer.observe(img));
+    }
+
+    // SWIPER / SLIDE MODE HANDLING
+    let swiperInstance = null;
+    function initSwiper() {
+      if (swiperInstance) return;
+      try {
+        swiperInstance = new Swiper('.swiper-container', {
+          direction: 'horizontal',
+          loop: false,
+          spaceBetween: 0,
+          slidesPerView: 1,
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+          pagination: { el: '.swiper-pagination', clickable: true },
+          on: {
+            init: function() {
+              lazyLoadSlideImage(this.activeIndex);
+            },
+            slideChange: function() {
+              lazyLoadSlideImage(this.activeIndex);
+            }
+          }
+        });
+      } catch (e) {
+        console.error('Swiper init error', e);
+      }
+    }
+
+    function lazyLoadSlideImage(index) {
+      const slides = document.querySelectorAll('.swiper-slide');
+      const idxList = [index, index+1, index-1]; 
+      idxList.forEach(i => {
+        const slide = slides[i];
+        if (slide) {
+          const img = slide.querySelector('img.slide-img');
+          if (img && img.dataset.src) {
+            try {
+              img.src = atob(img.dataset.src);
+              img.removeAttribute('data-src');
+              img.onload = () => img.classList.remove('opacity-0');
+            } catch (e) {
+              console.error('Slide decode fail', e);
+            }
+          }
+        }
+      });
+    }
+
+    // MODE TOGGLER (Vertical <-> Slide)
+    (function modeController(){
+      const btn = document.getElementById('modeToggleBtn');
+      const modeIcon = document.getElementById('modeIcon');
+      const modeLabel = document.getElementById('modeLabel');
+      const reader = document.getElementById('reader-area');
+      const slideArea = document.getElementById('slide-area');
+
+      // load saved mode
+      let mode = localStorage.getItem('readMode') || 'vertical'; 
+      function applyMode(m) {
+        if (m === 'slide') {
+          reader.classList.add('hidden');
+          slideArea.classList.remove('hidden');
+          modeIcon.textContent = 'S';
+          modeLabel.textContent = 'Slide';
+          initSwiper();
+        } else {
+          // vertical
+          slideArea.classList.add('hidden');
+          reader.classList.remove('hidden');
+          modeIcon.textContent = 'V';
+          modeLabel.textContent = 'Vertical';
+          initVerticalLazy();
+        }
+        localStorage.setItem('readMode', m);
+      }
+
+      // initial apply after DOM ready
+      document.addEventListener('DOMContentLoaded', () => {
+        applyMode(mode);
+      });
+      btn.addEventListener('click', () => {
+        mode = (mode === 'vertical') ? 'slide' : 'vertical';
+        applyMode(mode);
+      });
+    })();
+
+    // Ensure vertical lazy-init if page loaded in vertical mode
+    document.addEventListener('DOMContentLoaded', () => {
+      if ((localStorage.getItem('readMode') || 'vertical') === 'vertical') {
+        initVerticalLazy();
+      }
+    });
+  </script>
+
+  <style>
+    .tap-highlight-transparent { -webkit-tap-highlight-color: transparent; }
+
+    /* scrollbar */
+    .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: #111827; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background-color: #374151; border-radius: 20px; }
+
+    /* Reset default image behavior */
+    img { display: block; max-width: none; margin: 0; padding: 0; }
+
+    @media (max-width: 768px) {
+      /* Pastikan header height sinkron dengan CSS calc di atas */
+      .swiper-container { height: calc(100vh - 64px); } 
+    }
+  </style>
+
+</body>
+</html>

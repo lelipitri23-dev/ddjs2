@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<%- include('layout_head') %>
+<body class="flex flex-col min-h-screen bg-gray-900 text-gray-200">
+    
+    <%- include('navbar') %>
+
+    <main class="flex-grow w-full px-2 md:px-6 py-8">
+        
+        <h2 class="text-2xl font-bold mb-6 border-l-4 border-blue-500 pl-4 text-white uppercase">
+            <%= pageTitle %>
+        </h2>
+        
+        <% if(mangas.length > 0) { %>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-2 md:gap-6">
+                <% mangas.forEach(manga => { %>
+                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:-translate-y-1 transition duration-300 group border border-gray-800 hover:border-gray-600">
+                        <a href="/manga/<%= manga.slug %>" class="block h-full">
+                            
+                            <div class="h-56 md:h-72 bg-gray-700 relative overflow-hidden">
+                                <% if (manga.thumb) { %>
+                                    <img src="<%= manga.thumb %>" alt="<%= manga.title %>" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                                <% } else { %>
+                                    <div class="w-full h-full flex items-center justify-center text-4xl">📚</div>
+                                <% } %>
+                                
+                                <div class="absolute bottom-0 w-full bg-gradient-to-t from-black via-black/70 to-transparent p-2 pt-8">
+                                    <span class="text-[10px] md:text-xs text-blue-300 font-bold block uppercase tracking-wider">
+                                        <%= manga.metadata.type ? (typeof manga.metadata.type === 'object' ? manga.metadata.type.type : manga.metadata.type) : 'Komik' %>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="p-3">
+                                <h3 class="text-xs md:text-sm font-bold text-white line-clamp-2 mb-2 group-hover:text-blue-400 transition leading-snug">
+                                    <%= manga.title %>
+                                </h3>
+                                <div class="flex justify-between items-center text-[10px] md:text-xs text-gray-400 border-t border-gray-700 pt-2">
+                                    <span class="flex items-center gap-1 text-yellow-500">
+                                        ⭐ <%= manga.metadata.rating %>
+                                    </span>
+                                    <span class="bg-gray-700 text-gray-300 px-1.5 py-0.5 rounded">
+                                        <%= manga.metadata.status %>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <% }) %>
+            </div>
+
+            <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+                <div class="flex justify-center items-center gap-3 mt-12 mb-4">
+                    
+                    <% if (currentPage > 1) { %>
+                        <a href="<%= paginationBaseUrl %>page=<%= currentPage - 1 %>" class="bg-gray-800 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition border border-gray-700 text-sm flex items-center gap-1">
+                            <span>&laquo;</span> Prev
+                        </a>
+                    <% } %>
+
+                    <span class="text-gray-400 text-xs md:text-sm px-3 bg-gray-800 py-2 rounded border border-gray-700">
+                        Hal <span class="text-white font-bold"><%= currentPage %></span> / <%= totalPages %>
+                    </span>
+
+                    <% if (currentPage < totalPages) { %>
+                        <a href="<%= paginationBaseUrl %>page=<%= currentPage + 1 %>" class="bg-gray-800 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition border border-gray-700 text-sm flex items-center gap-1">
+                            Next <span>&raquo;</span>
+                        </a>
+                    <% } %>
+
+                </div>
+            <% } %>
+            <% } else { %>
+            <div class="flex flex-col items-center justify-center py-32 bg-gray-800/50 rounded-xl border border-dashed border-gray-700 mx-4">
+                <div class="text-6xl mb-4 opacity-50">😔</div>
+                <p class="text-xl text-gray-400 font-semibold">Tidak ditemukan</p>
+                <p class="text-gray-500 mt-2 text-sm">Coba kata kunci lain atau kembali ke beranda.</p>
+                <a href="/" class="mt-6 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full transition text-sm font-medium">Kembali ke Home</a>
+            </div>
+        <% } %>
+    </main>
+
+    <%- include('footer') %>
+</body>
+</html>

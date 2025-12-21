@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<%- include('layout_head') %>
+<body class="flex flex-col min-h-screen">
+    
+    <%- include('navbar') %>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-6 border-l-4 border-blue-500 pl-4 text-white uppercase">
+            Daftar Genre
+        </h1>
+        
+        <div class="bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+            <div class="mb-6">
+                <input type="text" id="genreFilter" onkeyup="filterGenres()" placeholder="Cari genre..." 
+                       class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-blue-500">
+            </div>
+
+            <% if (genres.length > 0) { %>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3" id="genreList">
+                    <% genres.forEach(g => { %>
+                        <a href="/genre/<%= g._id.replace(/\s+/g, '-').toLowerCase() %>" 
+                           class="genre-item flex justify-between items-center bg-gray-700 hover:bg-blue-600 text-gray-200 hover:text-white px-4 py-3 rounded-lg transition duration-200 group border border-gray-600 hover:border-blue-400">
+                            
+                            <span class="font-medium truncate mr-2" title="<%= g._id %>">
+                                <%= g._id %>
+                            </span>
+                            
+                            <span class="text-xs bg-gray-900 text-gray-400 group-hover:bg-white group-hover:text-blue-600 px-2 py-0.5 rounded-full font-bold transition">
+                                <%= g.count %>
+                            </span>
+                        </a>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <p class="text-gray-500 text-center">Belum ada genre tersedia.</p>
+            <% } %>
+        </div>
+    </main>
+
+    <%- include('footer') %>
+
+    <script>
+        function filterGenres() {
+            var input, filter, container, items, a, i, txtValue;
+            input = document.getElementById('genreFilter');
+            filter = input.value.toUpperCase();
+            container = document.getElementById("genreList");
+            items = container.getElementsByClassName('genre-item');
+
+            for (i = 0; i < items.length; i++) {
+                a = items[i].getElementsByTagName("span")[0];
+                txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    items[i].style.display = "";
+                } else {
+                    items[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

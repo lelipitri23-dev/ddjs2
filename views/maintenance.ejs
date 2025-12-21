@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<%- include('layout_head') %>
+<body class="bg-gray-900 text-gray-300 flex flex-col min-h-screen items-center justify-center p-4 font-sans overflow-hidden relative">
+
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/10 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+    </div>
+
+    <div class="max-w-lg w-full text-center space-y-6 bg-gray-800/50 p-8 rounded-2xl border border-gray-700 backdrop-blur-sm shadow-2xl">
+        
+        <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
+            <div class="absolute inset-0 bg-blue-500/20 rounded-full animate-ping"></div>
+            <div class="relative z-10 bg-gray-800 p-4 rounded-full border border-gray-600 shadow-lg">
+                <svg class="w-10 h-10 text-blue-500 animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+            </div>
+            <div class="absolute -bottom-2 -right-2 bg-gray-700 p-2 rounded-full border border-gray-600">
+                <svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+            </div>
+        </div>
+
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2">Sedang Dalam Perbaikan</h1>
+            <p class="text-gray-400 text-sm leading-relaxed">
+                Kami sedang melakukan peningkatan performa pada server <strong><%= typeof siteName !== 'undefined' ? siteName : 'Website' %></strong>. 
+                <br>Mohon kembali lagi dalam beberapa saat.
+            </p>
+        </div>
+
+        <div class="w-full bg-gray-700 rounded-full h-1.5 mb-4 overflow-hidden relative">
+            <div class="bg-blue-600 h-1.5 rounded-full absolute top-0 left-0 w-1/3 animate-indeterminate"></div>
+        </div>
+
+        <div class="pt-4">
+            <button onclick="window.location.reload()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-full font-bold transition transform hover:-translate-y-1 shadow-lg shadow-blue-500/30 flex items-center gap-2 mx-auto">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Coba Refresh
+            </button>
+        </div>
+        
+        <div class="text-xs text-gray-500 pt-6 border-t border-gray-700 mt-6">
+            &copy; <%= new Date().getFullYear() %> <%= typeof siteName !== 'undefined' ? siteName : 'DoujinShi' %>. All rights reserved.
+        </div>
+    </div>
+
+    <style>
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 8s linear infinite;
+        }
+        @keyframes indeterminate {
+            0% { left: -35%; width: 35%; }
+            60% { left: 100%; width: 100%; }
+            100% { left: 100%; width: 10%; }
+        }
+        .animate-indeterminate {
+            animation: indeterminate 2s infinite linear;
+        }
+    </style>
+</body>
+</html>

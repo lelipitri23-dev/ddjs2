@@ -1,0 +1,86 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="H3oKo02g2Znzw-rBsWhr3K8f0jDVbsQRKsAxm_UpF2M" />
+    <meta name="yandex-verification" content="a4a23c91e9090fdc" />
+    <meta name="google-site-verification" content="blTVPCjyG9raae2QkdmVI3wEshObTWrhYeEWkoKDh-g" />
+    <meta name="msvalidate.01" content="95303D372A99250F30B485C041CD858B" />
+    
+    <title><%= title %></title>
+    <meta name="description" content="<%= desc %>">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="application-name" content="<%= typeof siteName !== 'undefined' ? siteName : 'DoujinShi' %>" />
+    <meta name="theme-color" content="#111827" />
+    <link rel="canonical" href="<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %><%= typeof currentUrl !== 'undefined' ? currentUrl : '' %>" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <% 
+       let metaImage;
+       if (typeof image !== 'undefined' && image) {
+           // Jika ada gambar spesifik (dari detail manga), pakai itu
+           metaImage = image;
+       } else {
+           // Jika tidak ada, pakai logo default website
+           metaImage = (typeof siteUrl !== 'undefined' ? siteUrl : '') + '/logo-doujindesuXXX.png';
+       }
+    %>
+
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:type" content="<%= typeof ogType !== 'undefined' ? ogType : 'website' %>" />
+    <meta property="og:url" content="<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %><%= typeof currentUrl !== 'undefined' ? currentUrl : '' %>" />
+    <meta property="og:title" content="<%= title %>" />
+    <meta property="og:description" content="<%= desc %>">
+    <meta property="og:site_name" content="<%= typeof siteName !== 'undefined' ? siteName : 'DoujinShi' %>" />
+    
+    <meta itemprop="image" content="<%= metaImage %>" />
+    <meta property="og:image" content="<%= metaImage %>" />
+    <meta property="og:image:alt" content="<%= title %>" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %><%= typeof currentUrl !== 'undefined' ? currentUrl : '' %>">
+    <meta name="twitter:title" content="<%= title %>" />
+    <meta name="twitter:description" content="<%= desc %>">
+    <meta name="twitter:image" content="<%= metaImage %>" />
+    <meta name="twitter:image:alt" content="<%= title %>" />
+
+    <link rel="icon" href="/favicon.png" sizes="32x32" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
+    <link rel="icon" href="/favicon.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <meta name="msapplication-TileImage" content="/favicon.png" />
+    
+    <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=105647437', 'ym');
+
+    ym(105647437, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
+</script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar untuk nuansa dark mode */
+        body { background-color: #111827; color: #e5e7eb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+        
+        /* Utility tambahan */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        /* Mobile tap highlight fix */
+        .tap-highlight-transparent { -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
