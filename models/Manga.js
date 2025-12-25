@@ -6,7 +6,6 @@ const MangaSchema = new mongoose.Schema({
     slug: { type: String, required: true, unique: true, index: true },
     thumb: String,
     synopsis: String,
-    // TAMBAHAN: Field Views
     views: { type: Number, default: 0 }, 
     metadata: {
         status: String,
@@ -18,5 +17,7 @@ const MangaSchema = new mongoose.Schema({
     },
     tags: [String]
 }, { timestamps: true });
+
+MangaSchema.index({ updatedAt: -1 });
 
 module.exports = mongoose.model('Manga', MangaSchema);

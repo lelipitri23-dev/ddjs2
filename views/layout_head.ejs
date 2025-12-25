@@ -1,17 +1,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="H3oKo02g2Znzw-rBsWhr3K8f0jDVbsQRKsAxm_UpF2M" />
-    <meta name="yandex-verification" content="a4a23c91e9090fdc" />
-    <meta name="google-site-verification" content="blTVPCjyG9raae2QkdmVI3wEshObTWrhYeEWkoKDh-g" />
-    <meta name="msvalidate.01" content="95303D372A99250F30B485C041CD858B" />
     
+   <!-- Meta tags dinamis berdasarkan variabel yang diteruskan dari server -->
+     <meta google-site-verification" content="your-google-site-verification-code" />
+     <meta name="yandex-verification" content="your-yandex-verification-code" />
+     <meta name="bing-site-verification" content="your-bing-site-verification-code" />
+     <meta name="naver-site-verification" content="your-naver-site-verification-code" />
+     <meta name="googlebot" content="index, follow" />
+    
+
+   <!-- Judul dan deskripsi dinamis -->  
     <title><%= title %></title>
     <meta name="description" content="<%= desc %>">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="application-name" content="<%= typeof siteName !== 'undefined' ? siteName : 'DoujinShi' %>" />
     <meta name="theme-color" content="#111827" />
-    <link rel="canonical" href="<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %><%= typeof currentUrl !== 'undefined' ? currentUrl : '' %>" />
+    <% if (typeof canonicalUrl !== 'undefined' && canonicalUrl) { %>
+    <link rel="canonical" href="<%= canonicalUrl %>" />
+<% } else { %>
+    <link rel="canonical" href="<%= siteUrl %><%= currentUrl %>" />
+<% } %>
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -27,7 +36,7 @@
            metaImage = (typeof siteUrl !== 'undefined' ? siteUrl : '') + '/logo-doujindesuXXX.png';
        }
     %>
-
+    <!-- Open Graph dan Twitter Card -->
     <meta property="og:locale" content="id_ID" />
     <meta property="og:type" content="<%= typeof ogType !== 'undefined' ? ogType : 'website' %>" />
     <meta property="og:url" content="<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %><%= typeof currentUrl !== 'undefined' ? currentUrl : '' %>" />
@@ -51,19 +60,8 @@
     <link rel="icon" href="/favicon.png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/favicon.png" />
     <meta name="msapplication-TileImage" content="/favicon.png" />
-    
-    <script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=105647437', 'ym');
 
-    ym(105647437, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
-</script>
-
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <style>
         /* Custom scrollbar untuk nuansa dark mode */
         body { background-color: #111827; color: #e5e7eb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
