@@ -33,7 +33,7 @@
            metaImage = image;
        } else {
            // Jika tidak ada, pakai logo default website
-           metaImage = (typeof siteUrl !== 'undefined' ? siteUrl : '') + '/logo-doujindesuXXX.png';
+           metaImage = (typeof siteUrl !== 'undefined' ? siteUrl : '') + '/favicon.webp';
        }
     %>
     <!-- Open Graph dan Twitter Card -->
@@ -55,11 +55,13 @@
     <meta name="twitter:image" content="<%= metaImage %>" />
     <meta name="twitter:image:alt" content="<%= title %>" />
 
-    <link rel="icon" href="/favicon.png" sizes="32x32" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
-    <link rel="icon" href="/favicon.png" sizes="192x192" />
-    <link rel="apple-touch-icon" href="/favicon.png" />
-    <meta name="msapplication-TileImage" content="/favicon.png" />
+    <link rel="icon" href="<%= siteUrl %>/favicon.webp" sizes="32x32" />
+    <link rel="icon" type="image/png" sizes="16x16" href="<%= siteUrl %>/favicon.webp">
+    <link rel="icon" href="<%= siteUrl %>/favicon.webp" sizes="192x192" />
+    <link rel="apple-touch-icon" href="<%= siteUrl %>/favicon.webp" />
+    <meta name="msapplication-TileImage" content="<%= siteUrl %>/favicon.webp" />
+    <link rel="dns-prefetch" href="//cdn-images.doujindesu.fun/">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com/">
 
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <style>
@@ -67,8 +69,8 @@
         body { background-color: #111827; color: #e5e7eb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #1f2937; }
-        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+        ::-webkit-scrollbar-thumb { background: hsl(118, 92%, 48%); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0af06a; }
         
         /* Utility tambahan */
         .line-clamp-2 {

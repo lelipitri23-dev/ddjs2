@@ -1,69 +1,219 @@
 <!DOCTYPE html>
 <html lang="id">
 <%- include('layout_head') %>
-<body class="flex flex-col min-h-screen bg-gray-900 text-gray-200">
+
+<% 
+  const qParams = typeof queryParams !== 'undefined' ? queryParams : {}; 
+  const currentMode = qParams.mode || 'image';
+  
+  // Fallback jika database kosong atau variable belum dikirim
+  const listGenres = (typeof genreList !== 'undefined' && genreList.length > 0) ? genreList : [];
+  const listStatuses = (typeof statusList !== 'undefined' && statusList.length > 0) ? statusList : ['Ongoing', 'Completed', 'Hiatus'];
+  const listTypes = (typeof typeList !== 'undefined' && typeList.length > 0) ? typeList : ['Manga', 'Manhwa', 'Manhua', 'Doujinshi'];
+
+  // Helper untuk cek array genre di query
+  const selectedGenres = Array.isArray(qParams['genre[]']) ? qParams['genre[]'] : (qParams.genre ? [qParams.genre] : []);
+%>
+
+<body class="flex flex-col min-h-screen bg-gray-900 text-gray-200 font-sans">
     
     <%- include('navbar') %>
 
-<main class="flex-grow w-full px-2 md:px-6 py-8">        
-        <div class="flex justify-between items-end mb-8 border-b border-gray-700 pb-4">
+    <main class="flex-grow w-full px-2 md:px-6 py-8">        
+        
+        <div class="flex flex-col md:flex-row justify-between items-end mb-6 border-b border-gray-700 pb-4 gap-4">
             <div>
                 <h1 class="text-2xl md:text-3xl font-bold text-white mb-2 border-l-4 border-blue-500 pl-4">
                     Daftar Komik
                 </h1>
-                <p class="text-gray-400 text-sm pl-5">Menampilkan semua komik diurutkan dari A sampai Z</p>
+                <p class="text-gray-400 text-sm pl-5">Menampilkan semua komik dari database</p>
             </div>
-            <span class="text-xs bg-gray-800 text-gray-400 px-3 py-1 rounded-full border border-gray-700">
-                Total: <%= typeof totalPages !== 'undefined' ? totalPages * 24 : '...' %>+ Judul
-            </span>
+
+            <div>
+                <% if (currentMode === 'image') { %>
+                  <button onclick="changeMode('text')" class="bg-[#252525] hover:bg-[#333] text-white px-4 py-2 rounded text-sm border border-[#444] transition flex items-center gap-2">
+                    <i class="fas fa-list"></i> Mode Text
+                  </button>
+                <% } else { %>
+                  <button onclick="changeMode('image')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition flex items-center gap-2">
+                    <i class="fas fa-th-large"></i> Mode Gambar
+                  </button>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="bg-[#1e1e1e] p-4 rounded-lg border border-[#333] mb-8 shadow-md">
+            <form action="/manga-list" method="GET" class="flex flex-wrap gap-4 items-center" id="filterForm">
+              
+              <% if(qParams.q) { %> <input type="hidden" name="q" value="<%= qParams.q %>"> <% } %>
+              <input type="hidden" name="mode" id="modeInput" value="<%= currentMode %>">
+      
+              <div class="relative group dropdown-container z-20">
+                <button type="button" class="dropdown-btn bg-[#252525] text-gray-300 px-4 py-2 rounded border border-[#444] text-sm hover:border-blue-500 w-full md:w-auto flex justify-between items-center gap-2">
+                  Genre <i class="fas fa-angle-down"></i>
+                </button>
+                <div class="dropdown-content absolute bg-[#252525] border border-[#444] p-4 rounded mt-2 w-64 md:w-96 shadow-xl max-h-80 overflow-y-auto hidden">
+                  <div class="grid grid-cols-2 gap-2 text-xs">
+                    <% listGenres.forEach(g => { %>
+                      <div class="flex items-center gap-2">
+                        <input type="checkbox" id="g-<%= g %>" name="genre[]" value="<%= g %>" class="filter-checkbox" <%= selectedGenres.includes(g) ? 'checked' : '' %>>
+                        <label for="g-<%= g %>" class="cursor-pointer hover:text-blue-400 select-none"><%= g %></label>
+                      </div>
+                    <% }) %>
+                    <% if (listGenres.length === 0) { %>
+                        <p class="text-gray-500 italic col-span-2">Tidak ada genre ditemukan.</p>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+      
+              <div class="relative group dropdown-container z-20">
+                <button type="button" class="dropdown-btn bg-[#252525] text-gray-300 px-4 py-2 rounded border border-[#444] text-sm hover:border-blue-500 flex items-center gap-2">
+                  Status <i class="fas fa-angle-down"></i>
+                </button>
+                <div class="dropdown-content absolute bg-[#252525] border border-[#444] p-3 rounded mt-2 w-40 shadow-xl hidden">
+                  <div class="flex flex-col gap-2 text-xs">
+                    <label class="flex items-center gap-2 cursor-pointer hover:text-blue-400">
+                      <input type="radio" name="status" value="all" <%= (!qParams.status || qParams.status == 'all') ? 'checked' : '' %>> All
+                    </label>
+                    <% listStatuses.forEach(status => { %>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-blue-400">
+                          <input type="radio" name="status" value="<%= status %>" <%= qParams.status == status ? 'checked' : '' %>> <%= status %>
+                        </label>
+                    <% }) %>
+                  </div>
+                </div>
+              </div>
+      
+              <div class="relative group dropdown-container z-20">
+                <button type="button" class="dropdown-btn bg-[#252525] text-gray-300 px-4 py-2 rounded border border-[#444] text-sm hover:border-blue-500 flex items-center gap-2">
+                  Type <i class="fas fa-angle-down"></i>
+                </button>
+                <div class="dropdown-content absolute bg-[#252525] border border-[#444] p-3 rounded mt-2 w-40 shadow-xl hidden">
+                  <div class="flex flex-col gap-2 text-xs">
+                    <label class="flex items-center gap-2 cursor-pointer hover:text-blue-400">
+                      <input type="radio" name="type" value="all" <%= (!qParams.type || qParams.type == 'all') ? 'checked' : '' %>> All
+                    </label>
+                    <% listTypes.forEach(type => { %>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-blue-400">
+                          <input type="radio" name="type" value="<%= type %>" <%= qParams.type == type ? 'checked' : '' %>> <%= type %>
+                        </label>
+                    <% }) %>
+                  </div>
+                </div>
+              </div>
+      
+              <div class="relative group dropdown-container z-20">
+                <button type="button" class="dropdown-btn bg-[#252525] text-gray-300 px-4 py-2 rounded border border-[#444] text-sm hover:border-blue-500 flex items-center gap-2">
+                  Sort By <i class="fas fa-angle-down"></i>
+                </button>
+                <div class="dropdown-content absolute bg-[#252525] border border-[#444] p-3 rounded mt-2 w-40 shadow-xl hidden">
+                  <div class="flex flex-col gap-2 text-xs">
+                    <label class="flex items-center gap-2 cursor-pointer hover:text-blue-400">
+                      <input type="radio" name="orderby" value="update" <%= (!qParams.orderby || qParams.orderby == 'update') ? 'checked' : '' %>> Update
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:text-blue-400">
+                      <input type="radio" name="orderby" value="popular" <%= qParams.orderby == 'popular' ? 'checked' : '' %>> Popular
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:text-blue-400">
+                      <input type="radio" name="orderby" value="titleasc" <%= qParams.orderby == 'titleasc' ? 'checked' : '' %>> A-Z
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:text-blue-400">
+                      <input type="radio" name="orderby" value="titledesc" <%= qParams.orderby == 'titledesc' ? 'checked' : '' %>> Z-A
+                    </label>
+                  </div>
+                </div>
+              </div>
+      
+              <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded text-sm font-bold shadow-lg transition ml-auto">
+                <i class="fas fa-search mr-1"></i> Filter
+              </button>
+            </form>
         </div>
 
         <% if (mangas && mangas.length > 0) { %>
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-2 md:gap-6">
-                <% mangas.forEach(manga => { %>
+            
+            <% if (currentMode === 'image') { %>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-2 md:gap-6">
+                    <% mangas.forEach(manga => { %>
                     <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg border border-gray-800 hover:border-blue-500/50 hover:shadow-blue-500/10 transition duration-300 group">
-                        <a href="/manga/<%= manga.slug %>" class="block h-full">
-                            
-                            <div class="h-56 md:h-64 bg-gray-700 relative overflow-hidden">
-                                <% if (manga.thumb) { %>
-                                    <img src="<%= manga.thumb %>" alt="<%= manga.title %>" 
-                                         class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
-                                <% } else { %>
-                                    <div class="w-full h-full flex items-center justify-center text-3xl">📚</div>
-                                <% } %>
+                            <a href="/manga/<%= manga.slug %>" class="block h-full">
+                                <div class="h-56 md:h-64 bg-gray-700 relative overflow-hidden">
+                                    <% if (manga.thumb) { %>
+                                        <img src="<%= manga.thumb %>" alt="<%= manga.title %>" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                                    <% } else { %>
+                                        <div class="w-full h-full flex items-center justify-center text-3xl">📚</div>
+                                    <% } %>
 
-                                <div class="absolute top-2 left-2">
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded shadow-sm text-white
-                                        <%= (manga.metadata.type && manga.metadata.type.type === 'Doujinshi') ? 'bg-red-600' : 'bg-blue-600' %>">
-                                        <%= manga.metadata.type ? (typeof manga.metadata.type === 'object' ? manga.metadata.type.type : manga.metadata.type) : 'Manga' %>
-                                    </span>
+                                    <div class="absolute top-2 left-2">
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded shadow-sm text-white
+                                            <%= (manga.metadata.type && manga.metadata.type.type === 'Doujinshi') ? 'bg-red-600' : 'bg-blue-600' %>">
+                                            <%= manga.metadata.type ? (typeof manga.metadata.type === 'object' ? manga.metadata.type.type : manga.metadata.type) : 'Manga' %>
+                                        </span>
+                                    </div>
+
+                                    <div class="absolute bottom-0 w-full bg-gradient-to-t from-black via-black/70 to-transparent p-2 pt-6">
+                                        <span class="text-yellow-400 text-xs font-bold flex items-center gap-1">
+                                            ⭐ <%= manga.metadata.rating %>
+                                        </span>
+                                    </div>
                                 </div>
 
-                                <div class="absolute bottom-0 w-full bg-gradient-to-t from-black via-black/70 to-transparent p-2 pt-6">
-                                    <span class="text-yellow-400 text-xs font-bold flex items-center gap-1">
-                                        ⭐ <%= manga.metadata.rating %>
-                                    </span>
+                                <div class="p-3">
+                                    <h3 class="text-xs md:text-sm font-bold text-white line-clamp-2 mb-2 group-hover:text-blue-400 transition" title="<%= manga.title %>">
+                                        <%= manga.title %>
+                                    </h3>
+                                    <div class="flex justify-between items-center border-t border-gray-700 pt-2">
+                                        <span class="text-[10px] text-gray-400"><%= manga.metadata.status %></span>
+                                        <span class="text-[10px] text-blue-300">Detail &rarr;</span>
+                                    </div>
                                 </div>
+                            </a>
+                        </div>
+                    <% }) %>
+                </div>
+
+            <% } else { %>
+
+                <div class="flex flex-col gap-2">
+                    <% mangas.forEach(manga => { %>
+                        <a href="/manga/<%= manga.slug %>" class="flex items-center justify-between bg-gray-800 hover:bg-gray-750 p-3 rounded border border-gray-700 hover:border-blue-500 transition group">
+                            <div class="flex items-center gap-4">
+                                <span class="w-2 h-2 rounded-full <%= manga.metadata.status === 'Ongoing' ? 'bg-green-500' : 'bg-blue-500' %>"></span>
+                                <h3 class="text-sm font-medium text-gray-200 group-hover:text-blue-400"><%= manga.title %></h3>
                             </div>
-
-                            <div class="p-3">
-                                <h3 class="text-xs md:text-sm font-bold text-white line-clamp-2 mb-2 group-hover:text-blue-400 transition" title="<%= manga.title %>">
-                                    <%= manga.title %>
-                                </h3>
-                                <div class="flex justify-between items-center border-t border-gray-700 pt-2">
-                                    <span class="text-[10px] text-gray-400"><%= manga.metadata.status %></span>
-                                    <span class="text-[10px] text-blue-300">Detail &rarr;</span>
-                                </div>
+                            <div class="flex items-center gap-4 text-xs text-gray-400">
+                                <span class="hidden md:block"><%= manga.metadata.type ? (typeof manga.metadata.type === 'object' ? manga.metadata.type.type : manga.metadata.type) : 'Manga' %></span>
+                                <span class="text-yellow-500">⭐ <%= manga.metadata.rating %></span>
+                                <span><%= manga.chapter_count || 0 %> Ch</span>
                             </div>
                         </a>
-                    </div>
-                <% }) %>
-            </div>
+                    <% }) %>
+                </div>
+
+            <% } %>
 
             <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
                 <div class="flex flex-wrap justify-center items-center gap-2 mt-12 mb-8">
+                    <% 
+                        function getPageUrl(p) {
+                            let url = '/manga-list?page=' + p;
+                            if(qParams.q) url += '&q=' + qParams.q;
+                            if(qParams.mode) url += '&mode=' + qParams.mode;
+                            if(qParams.genre) {
+                                if(Array.isArray(qParams.genre)) qParams.genre.forEach(g => url += '&genre[]=' + g);
+                                else url += '&genre[]=' + qParams.genre;
+                            }
+                            if(qParams.status) url += '&status=' + qParams.status;
+                            if(qParams.type) url += '&type=' + qParams.type;
+                            if(qParams.orderby) url += '&orderby=' + qParams.orderby;
+                            return url;
+                        }
+                    %>
+
                     <% if (currentPage > 1) { %>
-                        <a href="/manga-list?page=<%= currentPage - 1 %>" class="bg-gray-800 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition border border-gray-700 text-sm">
+                        <a href="<%= getPageUrl(currentPage - 1) %>" class="bg-gray-800 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition border border-gray-700 text-sm">
                             &laquo; Prev
                         </a>
                     <% } %>
@@ -73,7 +223,7 @@
                     </div>
 
                     <% if (currentPage < totalPages) { %>
-                        <a href="/manga-list?page=<%= currentPage + 1 %>" class="bg-gray-800 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition border border-gray-700 text-sm">
+                        <a href="<%= getPageUrl(currentPage + 1) %>" class="bg-gray-800 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition border border-gray-700 text-sm">
                             Next &raquo;
                         </a>
                     <% } %>
@@ -84,10 +234,46 @@
             <div class="text-center py-32 bg-gray-800 rounded-xl border border-dashed border-gray-700">
                 <div class="text-6xl mb-4">📭</div>
                 <h3 class="text-xl font-bold text-white">Belum Ada Komik</h3>
-                <p class="text-gray-400 mt-2">Database masih kosong.</p>
+                <p class="text-gray-400 mt-2">Database masih kosong atau filter tidak menemukan hasil.</p>
             </div>
         <% } %>
 
     </main>
 
     <%- include('footer') %>
+
+    <script>
+        document.querySelectorAll('.dropdown-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const content = btn.nextElementSibling;
+                document.querySelectorAll('.dropdown-content').forEach(d => {
+                    if (d !== content) d.classList.add('hidden');
+                });
+                content.classList.toggle('hidden');
+            });
+        });
+
+        window.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+        });
+
+        document.querySelectorAll('.dropdown-content').forEach(content => {
+            content.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        });
+
+        function changeMode(mode) {
+            const input = document.getElementById('modeInput');
+            const form = document.getElementById('filterForm');
+            if (input && form) {
+                input.value = mode;
+                form.submit();
+            }
+        }
+    </script>
+</body>
+</html>

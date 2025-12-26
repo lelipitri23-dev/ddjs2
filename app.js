@@ -122,8 +122,8 @@ app.get('/', simpleCache(60), async (req, res) => {
       trending: trending,
       manhwas: manhwas,
       doujinshis: doujinshis,
-      title: `${res.locals.siteName} - Baca Manga & Manhwa Bahasa Indonesia`,
-      desc: `${res.locals.siteName} adalah website download dan baca doujin bahasa indonesia terbaru dan terlengkap. Kamu bisa membaca berbagai macam doujin secara gratis di ${res.locals.siteName}.`
+      title: `${res.locals.siteName} - Baca Komik Dewasa Terbaru Bahasa Indonesia`,
+      desc: `${res.locals.siteName} merupakan tempat baca komik manhwa18 terbaru dan Download Komik manhwa18 Sub Indo di ${res.locals.siteName}. ${res.locals.siteName} selalu update tercepat dan terlengkap di Indonesia..`
     });
   } catch (err) {
     res.status(500).send(err.message);
@@ -133,43 +133,34 @@ app.get('/', simpleCache(60), async (req, res) => {
 // DETAIL PAGE - Cache 3 Menit
 app.get('/manga/:slug', simpleCache(180), async (req, res) => {
   try {
-    // 1. Ambil Data Manga Utama
     const manga = await Manga.findOneAndUpdate(
       { slug: req.params.slug },
       { $inc: { views: 1 } },
       { new: true, timestamps: false }
     );
-
     if (!manga) return res.status(404).render('404');
-
-    // 2. Ambil Chapter
     let chapters = await Chapter.find({
       manga_id: manga._id
     }).lean();
-
-    // Sorting Chapter Manual
     chapters.sort((a, b) => {
         const numA = parseFloat(a.chapter_index) || 0;
         const numB = parseFloat(b.chapter_index) || 0;
         return numA - numB; 
     });
-
-    // 3. (BARU) AMBIL REKOMENDASI "YOU MAY ALSO LIKE"
-    // Strategi: Ambil 12 komik lain secara random
     const recommendations = await Manga.aggregate([
-        { $match: { _id: { $ne: manga._id } } }, // Jangan tampilkan komik yang sedang dibuka
-        { $sample: { size: 12 } },               // Ambil 12 secara acak
-        { $project: { title: 1, slug: 1, thumb: 1, metadata: 1 } } // Hanya ambil field penting agar ringan
+        { $match: { _id: { $ne: manga._id } } },
+        { $sample: { size: 12 } },
+        { $project: { title: 1, slug: 1, thumb: 1, metadata: 1 } }
     ]);
 
     const siteName = res.locals.siteName;
     const type = manga.metadata && manga.metadata.type ? manga.metadata.type : 'Komik';
-    const seoDesc = `Baca ${type} ${manga.title} bahasa Indonesia lengkap di ${siteName}.`;
+    const seoDesc = `Baca ${type} ${manga.title} bahasa Indonesia lengkap di ${siteName} ${manga.synopsis}.`;
 
     res.render('detail', {
       manga,
       chapters,
-      recommendations, // <--- Kirim variable ini ke EJS
+      recommendations,
       title: `${manga.title} Bahasa Indonesia - ${res.locals.siteName}`,
       desc: seoDesc,
       ogType: 'article',
@@ -188,27 +179,92 @@ app.get('/manga-list', simpleCache(300), async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
 
-    const totalManga = await Manga.countDocuments();
+    // --- FILTER QUERY LOGIC ---
+    let query = {};
+    const { q, status, type, orderby } = req.query;
+    const genreParam = req.query['genre[]'] || req.query.genre; // Handle array or string
+
+    // 1. Search
+    if (q) {
+      query.title = { $regex: q, $options: 'i' };
+    }
+
+    // 2. Filter Status
+    if (status && status !== 'all') {
+      query['metadata.status'] = { $regex: status, $options: 'i' };
+    }
+
+    // 3. Filter Type (Menangani data string atau object warisan)
+    if (type && type !== 'all') {
+      query.$or = [
+        { 'metadata.type': { $regex: type, $options: 'i' } },
+        { 'metadata.type.type': { $regex: type, $options: 'i' } } // Handle legacy object structure
+      ];
+    }
+
+    // 4. Filter Genre
+    if (genreParam) {
+      const genres = Array.isArray(genreParam) ? genreParam : [genreParam];
+      if (genres.length > 0) {
+        // $all artinya manga harus punya SEMUA genre yang dipilih
+        query.tags = { $all: genres.map(g => new RegExp(g, 'i')) };
+      }
+    }
+
+    // --- SORTING LOGIC ---
+    let sort = { title: 1 }; // Default A-Z
+    if (orderby === 'titledesc') sort = { title: -1 };
+    if (orderby === 'update') sort = { updatedAt: -1 };
+    if (orderby === 'popular') sort = { views: -1 };
+
+    // --- FETCH DATA UTAMA ---
+    const totalManga = await Manga.countDocuments(query);
     const totalPages = Math.ceil(totalManga / limit);
 
-    let mangas = await Manga.find()
-    .select('title slug thumb metadata.rating metadata.type metadata.status')
-    .sort({
-      title: 1
-    })
-    .skip(skip)
-    .limit(limit);
+    let mangas = await Manga.find(query)
+      .select('title slug thumb metadata tags views updatedAt') // Select field penting saja
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
 
     mangas = await attachChapterCounts(mangas);
+
+    // --- [BARU] AMBIL DATA OPSI FILTER DARI DB ---
+    // Mengambil daftar unik dari database agar dropdown sesuai isi DB
+    const [dbGenres, dbStatuses, dbTypes] = await Promise.all([
+      Manga.distinct('tags'),
+      Manga.distinct('metadata.status'),
+      Manga.distinct('metadata.type')
+    ]);
+
+    // Bersihkan data (hapus null/kosong dan urutkan)
+    const genreList = dbGenres.filter(g => g).sort();
+    const statusList = dbStatuses.filter(s => s).sort();
+    
+    // Normalisasi Type (karena ada kemungkinan data lama berbentuk object)
+    const typeSet = new Set();
+    dbTypes.forEach(t => {
+      if (typeof t === 'string') typeSet.add(t);
+      else if (t && t.type) typeSet.add(t.type); // Jika tersimpan sebagai object
+    });
+    const typeList = Array.from(typeSet).sort();
 
     res.render('manga_list', {
       mangas,
       currentPage: page,
       totalPages: totalPages,
-      title: `Daftar Komik A-Z - Halaman ${page}`,
-      desc: `Daftar lengkap komik diurutkan dari A-Z.`
+      title: `Daftar Komik - Halaman ${page}`,
+      desc: `Daftar lengkap komik diurutkan dari A-Z.`,
+      
+      // Kirim variable filter ke EJS
+      queryParams: req.query, 
+      genreList, 
+      statusList, 
+      typeList
     });
+
   } catch (err) {
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
@@ -505,7 +561,13 @@ app.get('/robots.txt', (req, res) => {
     const baseUrl = process.env.SITE_URL || `https://${req.get('host')}`;
     res.type('text/plain');
     res.send(
-        `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${baseUrl}/sitemap_index.xml`
+`User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /read/
+Disallow: /search
+
+Sitemap: ${baseUrl}/sitemap_index.xml`
     );
 });
 
