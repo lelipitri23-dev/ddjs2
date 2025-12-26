@@ -219,9 +219,24 @@
     </div>
   </div>
 
-  <%- include('footer') %>
+  <footer class="bg-gray-900 border-t border-gray-800 text-gray-400 py-10 mt-12 relative">
+  <div class="container mx-auto px-4">
+    <div class="flex flex-col md:flex-row justify-between items-center text-sm">
+      
+      <p class="mb-2 md:mb-0">
+        &copy; <%= new Date().getFullYear() %> <%= typeof siteName !== 'undefined' ? siteName : 'DoujinShi' %>. All rights reserved.
+      </p>
 
-  <script>
+      <div class="space-x-4">
+        <a href="/privacy" class="hover:text-white transition">Privacy Policy</a>
+        <a href="/terms" class="hover:text-white transition">Terms of Service</a>
+        <a href="/contact" class="hover:text-white transition">Contact Us</a>
+      </div>
+
+    </div>
+  </div>
+</footer>
+<script>
     // Sidebar Toggle
     function toggleSidebar() {
       const sidebar = document.getElementById('chapter-sidebar');
@@ -401,3 +416,6 @@
       .swiper-container { height: calc(100vh - 64px); } 
     }
   </style>
+<%- include('firebase_config') %>
+</body>
+</html>
