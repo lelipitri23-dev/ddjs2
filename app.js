@@ -253,8 +253,8 @@ app.get('/manga-list', simpleCache(300), async (req, res) => {
       mangas,
       currentPage: page,
       totalPages: totalPages,
-      title: `Daftar Komik - Halaman ${page}`,
-      desc: `Daftar lengkap komik diurutkan dari A-Z.`,
+      title: `Daftar Semua Manga - Halaman ${page}`,
+      desc: `Daftar lengkap Manga diurutkan dari A-Z.`,
       
       // Kirim variable filter ke EJS
       queryParams: req.query, 
