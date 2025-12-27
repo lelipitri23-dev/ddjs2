@@ -186,9 +186,9 @@ app.get('/manga/:slug', simpleCache(180), async (req, res) => {
     }).lean();
 
     // Sorting Descending (Chapter Baru di Atas)
-    chapters.sort((a, b) => {
-        const numA = parseFloat(String(a.chapter_index).replace(/[^0-9.]/g, '')) || 0;
+    chapters.sort((b, a) => {
         const numB = parseFloat(String(b.chapter_index).replace(/[^0-9.]/g, '')) || 0;
+        const numA = parseFloat(String(a.chapter_index).replace(/[^0-9.]/g, '')) || 0;
         return numB - numA; 
     });
 
@@ -326,14 +326,14 @@ app.get('/read/:slug/:chapterSlug', simpleCache(600), async (req, res) => {
       slug: req.params.slug
     }).lean();
     if (!manga) return res.status(404).send('Manga not found');
+    
     const chapter = await Chapter.findOne({
       manga_id: manga._id, slug: req.params.chapterSlug
     });
     if (!chapter) return res.status(404).send('Chapter not found');
 
-    const [allChapters,
-      nextChap,
-      prevChap] = await Promise.all([
+    const [allChapters, nextChap, prevChap] = await Promise.all([
+        // 1. Ambil Semua Chapter untuk Sidebar/List
         Chapter.find({
           manga_id: manga._id
         })
@@ -341,21 +341,27 @@ app.get('/read/:slug/:chapterSlug', simpleCache(600), async (req, res) => {
         .sort({
           chapter_index: -1
         }),
+
+        // 2. LOGIKA NEXT (Chapter Selanjutnya / Angka Lebih Besar)
+        // Contoh: Sekarang Ch 10, Next adalah Ch 11 ($gt: 10, sort asc)
         Chapter.findOne({
           manga_id: manga._id,
           chapter_index: {
-            $lt: chapter.chapter_index
+            $gt: chapter.chapter_index // UBAH DISINI: Gunakan $gt (Greater Than)
           }
         }).sort({
-          chapter_index: -1
+          chapter_index: 1 // Sort Ascending (11, 12, 13...) ambil yang pertama
         }),
+
+        // 3. LOGIKA PREV (Chapter Sebelumnya / Angka Lebih Kecil)
+        // Contoh: Sekarang Ch 10, Prev adalah Ch 9 ($lt: 10, sort desc)
         Chapter.findOne({
           manga_id: manga._id,
           chapter_index: {
-            $gt: chapter.chapter_index
+            $lt: chapter.chapter_index // UBAH DISINI: Gunakan $lt (Less Than)
           }
         }).sort({
-          chapter_index: 1
+          chapter_index: -1 // Sort Descending (9, 8, 7...) ambil yang pertama
         })
       ]);
 

@@ -141,10 +141,10 @@
           <% if (chapters.length > 0) { %>
             
             <% 
-               chapters.sort((a, b) => {
-                   const numA = parseFloat(String(a.chapter_index).replace(/[^0-9.]/g, '')) || 0;
+               chapters.sort((b, a) => {
                    const numB = parseFloat(String(b.chapter_index).replace(/[^0-9.]/g, '')) || 0;
-                   return numA - numB;
+                   const numA = parseFloat(String(a.chapter_index).replace(/[^0-9.]/g, '')) || 0;
+                   return numB - numA;
                });
             %>
 
