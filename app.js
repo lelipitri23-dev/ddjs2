@@ -108,7 +108,7 @@ async function attachLatestChapter(mangas) {
 // ==========================================
 
 // HOME PAGE - Cache 60 Detik
-app.get('/', simpleCache(60), async (req, res) => {
+app.get('/', simpleCache(180), async (req, res) => {
   try {
     const limit = 24;
     const page = parseInt(req.query.page) || 1;
