@@ -231,6 +231,16 @@
                       <div class="w-full h-full flex items-center justify-center text-4xl"></div>
                     <% } %>
 
+                    <div class="absolute top-2 right-2 z-10">
+                      <span class="bg-gray-900/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded border border-gray-600 shadow-lg">
+                        <% if (manga.latestChapter) { %>
+                          Ch. <%= manga.latestChapter.chapter_index %>
+                        <% } else { %>
+                          Ch. ?
+                        <% } %>
+                      </span>
+                    </div>
+
                     <div class="absolute bottom-0 w-full bg-gradient-to-t from-black via-black/80 to-transparent p-2 pt-8">
                       <span class="text-[9px] md:text-[10px] text-red-300 font-bold block uppercase tracking-wider">Doujinshi</span>
                     </div>

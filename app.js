@@ -152,7 +152,7 @@ app.get('/', simpleCache(60), async (req, res) => {
       manhwas: manhwas,
       doujinshis: doujinshis,
       title: `${res.locals.siteName} - Baca Komik Dewasa Terbaru Bahasa Indonesia`,
-      desc: `${res.locals.siteName} tempat baca komik...`
+      desc: `${res.locals.siteName} Baca komik dewasa terbaru, manhwa 18+, manga, dan webtoon bahasa Indonesia gratis. Update harian dengan koleksi terlengkap di ${res.locals.siteName}.`
     });
   } catch (err) {
     console.error(err); // Penting untuk debugging

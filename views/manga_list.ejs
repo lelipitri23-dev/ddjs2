@@ -50,18 +50,19 @@
             </div>
         </div>
 
-        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-4 mb-8 shadow-xl relative z-30">
+        <div class="bg-[#rgb(59 130 246 / 0.5)] border border-gray-800 rounded-xl p-4 mb-8 shadow-xl relative z-30">
             <form action="/manga-list" method="GET" class="flex flex-wrap items-center gap-3" id="filterForm">
               
               <% if(qParams.q) { %> <input type="hidden" name="q" value="<%= qParams.q %>"> <% } %>
               <input type="hidden" name="mode" id="modeInput" value="<%= currentMode %>">
       
               <div class="relative group dropdown-container flex-grow md:flex-grow-0">
-                <button type="button" class="dropdown-btn w-full md:w-auto bg-[#252525] hover:bg-[#333] text-gray-300 px-4 py-2.5 rounded-lg border border-[#333] hover:border-gray-500 text-sm flex justify-between items-center gap-3 transition">
-                  <span class="flex items-center gap-2"><i class="fas fa-tags text-blue-500"></i> Genre</span> 
+                <button type="button" class="dropdown-btn w-full md:w-auto bg-[#2A2A2A] hover:bg-[#333] text-gray-300 px-4 py-2.5 rounded-lg border border-[#333] hover:border-[rgb(59_130_246_/_0.5)] hover:text-blue-400 text-sm flex justify-between items-center gap-3 transition duration-300">
+                  <span class="flex items-center gap-2"><i class="fas fa-tags text-gray-400 group-hover:text-blue-400 transition"></i> Genre</span> 
                   <i class="fas fa-chevron-down text-xs opacity-50"></i>
                 </button>
-                <div class="dropdown-content absolute top-full left-0 mt-2 bg-[#252525] border border-gray-700 p-4 rounded-xl w-72 md:w-96 shadow-2xl max-h-80 overflow-y-auto hidden z-50">
+              
+                <div class="dropdown-content absolute top-full left-0 mt-2 bg-[#rgb(59 130 246 / 0.5)] border border-gray-700 p-4 rounded-xl w-72 md:w-96 shadow-2xl max-h-80 overflow-y-auto hidden z-50">
                   <div class="grid grid-cols-2 gap-2 text-xs">
                     <% listGenres.forEach(g => { %>
                       <div class="flex items-center gap-2 p-1 hover:bg-white/5 rounded">
@@ -75,18 +76,19 @@
               </div>
       
               <div class="relative group dropdown-container flex-grow md:flex-grow-0">
-                <button type="button" class="dropdown-btn w-full md:w-auto bg-[#252525] hover:bg-[#333] text-gray-300 px-4 py-2.5 rounded-lg border border-[#333] hover:border-gray-500 text-sm flex justify-between items-center gap-3 transition">
-                   <span class="flex items-center gap-2"><i class="fas fa-info-circle text-green-500"></i> Status</span>
+                <button type="button" class="dropdown-btn w-full md:w-auto bg-[#2A2A2A] hover:bg-[#333] text-gray-300 px-4 py-2.5 rounded-lg border border-[#333] hover:border-[rgb(59_130_246_/_0.5)] hover:text-blue-400 text-sm flex justify-between items-center gap-3 transition duration-300">
+                   <span class="flex items-center gap-2"><i class="fas fa-info-circle text-gray-400 group-hover:text-blue-400 transition"></i> Status</span>
                    <i class="fas fa-chevron-down text-xs opacity-50"></i>
                 </button>
-                <div class="dropdown-content absolute top-full left-0 mt-2 bg-[#252525] border border-gray-700 p-2 rounded-xl w-44 shadow-2xl hidden z-50">
+             
+                <div class="dropdown-content absolute top-full left-0 mt-2 bg-[#rgb(59 130 246 / 0.5)] border border-gray-700 p-2 rounded-xl w-44 shadow-2xl hidden z-50">
                   <div class="flex flex-col text-xs">
                     <label class="flex items-center gap-2 p-2 hover:bg-white/5 rounded cursor-pointer">
                       <input type="radio" name="status" value="all" class="accent-blue-600" <%= (!qParams.status || qParams.status == 'all') ? 'checked' : '' %>> All Status
                     </label>
                     <% listStatuses.forEach(status => { %>
                         <label class="flex items-center gap-2 p-2 hover:bg-white/5 rounded cursor-pointer">
-                          <input type="radio" name="status" value="<%= status %>" class="accent-blue-600" <%= qParams.status == status ? 'checked' : '' %>> <%= status %>
+                           <input type="radio" name="status" value="<%= status %>" class="accent-blue-600" <%= qParams.status == status ? 'checked' : '' %>> <%= status %>
                         </label>
                     <% }) %>
                   </div>
@@ -94,18 +96,18 @@
               </div>
       
               <div class="relative group dropdown-container flex-grow md:flex-grow-0">
-                <button type="button" class="dropdown-btn w-full md:w-auto bg-[#252525] hover:bg-[#333] text-gray-300 px-4 py-2.5 rounded-lg border border-[#333] hover:border-gray-500 text-sm flex justify-between items-center gap-3 transition">
-                  <span class="flex items-center gap-2"><i class="fas fa-book text-red-500"></i> Type</span>
+                <button type="button" class="dropdown-btn w-full md:w-auto bg-[#2A2A2A] hover:bg-[#333] text-gray-300 px-4 py-2.5 rounded-lg border border-[#333] hover:border-[rgb(59_130_246_/_0.5)] hover:text-blue-400 text-sm flex justify-between items-center gap-3 transition duration-300">
+                  <span class="flex items-center gap-2"><i class="fas fa-book text-gray-400 group-hover:text-blue-400 transition"></i> Type</span>
                   <i class="fas fa-chevron-down text-xs opacity-50"></i>
                 </button>
-                <div class="dropdown-content absolute top-full left-0 mt-2 bg-[#252525] border border-gray-700 p-2 rounded-xl w-44 shadow-2xl hidden z-50">
+                <div class="dropdown-content absolute top-full left-0 mt-2 bg-[#rgb(59 130 246 / 0.5)] border border-gray-700 p-2 rounded-xl w-44 shadow-2xl hidden z-50">
                   <div class="flex flex-col text-xs">
                     <label class="flex items-center gap-2 p-2 hover:bg-white/5 rounded cursor-pointer">
                       <input type="radio" name="type" value="all" class="accent-blue-600" <%= (!qParams.type || qParams.type == 'all') ? 'checked' : '' %>> All Types
                     </label>
                     <% listTypes.forEach(type => { %>
                         <label class="flex items-center gap-2 p-2 hover:bg-white/5 rounded cursor-pointer">
-                          <input type="radio" name="type" value="<%= type %>" class="accent-blue-600" <%= qParams.type == type ? 'checked' : '' %>> <%= type %>
+                           <input type="radio" name="type" value="<%= type %>" class="accent-blue-600" <%= qParams.type == type ? 'checked' : '' %>> <%= type %>
                         </label>
                     <% }) %>
                   </div>
@@ -113,11 +115,11 @@
               </div>
       
               <div class="relative group dropdown-container flex-grow md:flex-grow-0">
-                <button type="button" class="dropdown-btn w-full md:w-auto bg-[#252525] hover:bg-[#333] text-gray-300 px-4 py-2.5 rounded-lg border border-[#333] hover:border-gray-500 text-sm flex justify-between items-center gap-3 transition">
-                  <span class="flex items-center gap-2"><i class="fas fa-sort text-yellow-500"></i> Sort</span>
+                <button type="button" class="dropdown-btn w-full md:w-auto bg-[#2A2A2A] hover:bg-[#333] text-gray-300 px-4 py-2.5 rounded-lg border border-[#333] hover:border-[rgb(59_130_246_/_0.5)] hover:text-blue-400 text-sm flex justify-between items-center gap-3 transition duration-300">
+                  <span class="flex items-center gap-2"><i class="fas fa-sort text-gray-400 group-hover:text-blue-400 transition"></i> Sort</span>
                   <i class="fas fa-chevron-down text-xs opacity-50"></i>
                 </button>
-                <div class="dropdown-content absolute top-full left-0 mt-2 bg-[#252525] border border-gray-700 p-2 rounded-xl w-44 shadow-2xl hidden z-50">
+                <div class="dropdown-content absolute top-full left-0 mt-2 bg-[#rgb(59 130 246 / 0.5)] border border-gray-700 p-2 rounded-xl w-44 shadow-2xl hidden z-50">
                   <div class="flex flex-col text-xs">
                     <label class="flex items-center gap-2 p-2 hover:bg-white/5 rounded cursor-pointer">
                       <input type="radio" name="orderby" value="update" class="accent-blue-600" <%= (!qParams.orderby || qParams.orderby == 'update') ? 'checked' : '' %>> Latest Update
@@ -136,7 +138,7 @@
               </div>
       
               <div class="flex-grow flex items-center gap-2 ml-auto">
-                  <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-lg shadow-blue-600/20 transition w-full md:w-auto flex items-center justify-center gap-2">
+                  <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-[0_0_15px_rgb(59_130_246_/_0.5)] transition w-full md:w-auto flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgb(59_130_246_/_0.7)]">
                     <i class="fas fa-filter"></i> Terapkan
                   </button>
                   
@@ -157,7 +159,7 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-2 md:gap-6">
                     <% mangas.forEach(manga => { %>
                     <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg border border-gray-800 hover:border-blue-500/50 hover:shadow-blue-500/10 transition duration-300 group">
-                            <a href="/manga/<%= manga.slug %>" class="block h-full">
+                        <a href="/manga/<%= manga.slug %>" class="block h-full">
                                 <div class="h-56 md:h-64 bg-gray-700 relative overflow-hidden">
                                     <% if (manga.thumb) { %>
                                         <img src="<%= manga.thumb %>" alt="<%= manga.title %>" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
@@ -197,7 +199,7 @@
 
                 <div class="flex flex-col gap-3">
                     <% mangas.forEach(manga => { %>
-                        <a href="/manga/<%= manga.slug %>" class="relative flex items-center gap-3 md:gap-4 bg-[#1e1e1e] hover:bg-[#252525] p-2 md:p-3 rounded-lg border border-gray-800 hover:border-blue-500/50 transition-all duration-300 group overflow-hidden shadow-sm">
+                        <a href="/manga/<%= manga.slug %>" class="relative flex items-center gap-3 md:gap-4 bg-[#rgb(59 130 246 / 0.5)] hover:bg-[#rgb(59 130 246 / 0.5)] p-2 md:p-3 rounded-lg border border-gray-800 hover:border-blue-500/50 transition-all duration-300 group overflow-hidden shadow-sm">
                             
                             <div class="w-12 h-16 md:w-14 md:h-20 flex-shrink-0 rounded overflow-hidden bg-gray-800 relative shadow-md">
                                 <% if (manga.thumb) { %>
@@ -213,7 +215,7 @@
                                         <%= (manga.metadata.type && manga.metadata.type.type === 'Doujinshi') ? 'bg-red-600' : 'bg-blue-600' %>">
                                         <%= manga.metadata.type ? (typeof manga.metadata.type === 'object' ? manga.metadata.type.type : manga.metadata.type) : 'Manga' %>
                                     </span>
-                                    
+                                     
                                     <span class="text-[10px] flex items-center gap-1 <%= manga.metadata.status === 'Ongoing' ? 'text-green-400' : 'text-blue-300' %>">
                                         <i class="fas fa-circle text-[6px]"></i> 
                                         <%= manga.metadata.status %>
@@ -330,5 +332,3 @@
             }
         }
     </script>
-</body>
-</html>
