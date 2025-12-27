@@ -82,25 +82,55 @@ async function attachChapterCounts(mangas) {
 }
 
 // ==========================================
-// HELPER: Ambil 1 Chapter Terbaru (Fixed variable 'recent')
+// HELPER: Ambil 1 Chapter Terbaru (SUPER RINGAN)
+// Menggunakan Aggregation (1 Query untuk banyak Manga)
 // ==========================================
 async function attachLatestChapter(mangas) {
-  return await Promise.all(mangas.map(async (m) => {
-    // 1. Cari 1 chapter dengan index tertinggi (terbaru)
-    const recent = await mongoose.model('Chapter').findOne({ manga_id: m._id })
-      .select('chapter_index slug createdAt') // Hanya ambil field penting
-      .sort({ chapter_index: -1 })           // Urutkan dari chapter terbesar
-      .lean();                               // Konversi ke object JS biasa
+  if (!mangas || mangas.length === 0) return [];
 
-    // 2. Konversi dokumen manga ke object
+  // 1. Kumpulkan semua ID Manga dalam array
+  const mangaIds = mangas.map(m => m._id);
+
+  // 2. Lakukan 1 Query Aggregation untuk mencari chapter terbaru dari semua ID tersebut
+  const latestChapters = await mongoose.model('Chapter').aggregate([
+    { 
+      $match: { 
+        manga_id: { $in: mangaIds } // Cari chapter yang manga_id nya ada di list
+      } 
+    },
+    { $sort: { chapter_index: -1 } }, // Urutkan chapter dari besar ke kecil
+    {
+      $group: {
+        _id: "$manga_id",           // Kelompokkan per Manga
+        latest: { $first: "$$ROOT" } // Ambil chapter pertama (teratas/terbaru) setelah disortir
+      }
+    },
+    {
+      $project: { // Hanya ambil field yang penting (Hemat Bandwidth)
+        _id: 1, 
+        "latest.chapter_index": 1,
+        "latest.slug": 1,
+        "latest.createdAt": 1
+      }
+    }
+  ]);
+
+  // 3. Buat Map (Kamus) untuk pencarian cepat di memori
+  const chapterMap = new Map();
+  latestChapters.forEach(item => {
+    chapterMap.set(item._id.toString(), item.latest);
+  });
+
+  // 4. Tempelkan data chapter ke object manga
+  return mangas.map(m => {
+    // Pastikan bentuknya object biasa (karena kita akan pakai .lean() di route)
     const mObj = m.toObject ? m.toObject() : m;
     
-    // 3. Masukkan data chapter (recent) ke properti 'latestChapter'
-    // Jika tidak ada chapter, recent akan bernilai null
-    mObj.latestChapter = recent; 
+    // Ambil data dari Map, jika tidak ada set null
+    mObj.latestChapter = chapterMap.get(mObj._id.toString()) || null;
     
     return mObj;
-  }));
+  });
 }
 
 // ==========================================
