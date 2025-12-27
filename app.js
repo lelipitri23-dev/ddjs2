@@ -82,20 +82,22 @@ async function attachChapterCounts(mangas) {
 }
 
 // ==========================================
-// HELPER: Ambil 1 Chapter Terbaru (Optimized)
+// HELPER: Ambil 1 Chapter Terbaru (Fixed variable 'recent')
 // ==========================================
 async function attachLatestChapter(mangas) {
   return await Promise.all(mangas.map(async (m) => {
-    // Cari 1 chapter dengan index tertinggi (terbaru)
-    const latest = await Chapter.findOne({ manga_id: m._id })
-      .select('chapter_index slug createdAt') // Hanya ambil field penting (Hemat Memory)
-      .sort({ chapter_index: -1 })           // Urutkan dari yang terbesar
-      .lean();                               // Konversi ke object JS biasa (Cepat)
+    // 1. Cari 1 chapter dengan index tertinggi (terbaru)
+    const recent = await mongoose.model('Chapter').findOne({ manga_id: m._id })
+      .select('chapter_index slug createdAt') // Hanya ambil field penting
+      .sort({ chapter_index: -1 })           // Urutkan dari chapter terbesar
+      .lean();                               // Konversi ke object JS biasa
 
+    // 2. Konversi dokumen manga ke object
     const mObj = m.toObject ? m.toObject() : m;
     
-    // Masukkan data chapter ke dalam object manga
-    mObj.latestChapter = latest; 
+    // 3. Masukkan data chapter (recent) ke properti 'latestChapter'
+    // Jika tidak ada chapter, recent akan bernilai null
+    mObj.latestChapter = recent; 
     
     return mObj;
   }));
@@ -161,29 +163,46 @@ app.get('/', simpleCache(60), async (req, res) => {
 // DETAIL PAGE - Cache 3 Menit
 app.get('/manga/:slug', simpleCache(180), async (req, res) => {
   try {
+    // Update Views
     const manga = await Manga.findOneAndUpdate(
       { slug: req.params.slug },
       { $inc: { views: 1 } },
       { new: true, timestamps: false }
     );
-    if (!manga) return res.status(404).render('404');
+
+    // --- PERBAIKAN DI SINI ---
+    // Tambahkan object { title: '...', desc: '...' } agar layout_head tidak error
+    if (!manga) {
+      return res.status(404).render('404', {
+        title: '404 - Manga Tidak Ditemukan',
+        desc: 'Maaf, manga yang Anda cari tidak dapat ditemukan.'
+      });
+    }
+    // -------------------------
+
+    // Ambil Chapters
     let chapters = await Chapter.find({
       manga_id: manga._id
     }).lean();
+
+    // Sorting Descending (Chapter Baru di Atas)
     chapters.sort((a, b) => {
-        const numA = parseFloat(a.chapter_index) || 0;
-        const numB = parseFloat(b.chapter_index) || 0;
-        return numA - numB; 
+        const numA = parseFloat(String(a.chapter_index).replace(/[^0-9.]/g, '')) || 0;
+        const numB = parseFloat(String(b.chapter_index).replace(/[^0-9.]/g, '')) || 0;
+        return numB - numA; 
     });
+
+    // Rekomendasi Manga Lain
     const recommendations = await Manga.aggregate([
         { $match: { _id: { $ne: manga._id } } },
         { $sample: { size: 12 } },
         { $project: { title: 1, slug: 1, thumb: 1, metadata: 1 } }
     ]);
 
+    // SEO Data
     const siteName = res.locals.siteName;
     const type = manga.metadata && manga.metadata.type ? manga.metadata.type : 'Komik';
-    const seoDesc = `Baca ${type} ${manga.title} bahasa Indonesia lengkap di ${siteName} ${manga.synopsis}.`;
+    const seoDesc = `Baca ${type} ${manga.title} bahasa Indonesia lengkap di ${siteName}. ${manga.synopsis || ''}`;
 
     res.render('detail', {
       manga,

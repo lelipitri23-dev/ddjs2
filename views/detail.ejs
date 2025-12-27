@@ -1,44 +1,45 @@
 <!DOCTYPE html>
 <html lang="id">
 <%- include('layout_head') %>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col min-h-screen bg-gray-900 text-gray-200 font-sans">
 
   <%- include('navbar') %>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Book",
-  "name": "<%= manga.title %>",
-  "alternateName": "<%= manga.alternativeTitle || '' %>",
-  "image": "<%= manga.thumb %>",
-  "description": "<%= manga.synopsis ? manga.synopsis.replace(/[\r\n]+/g, ' ') : '' %>",
-  "author": {
-    "@type": "Person",
-    "name": "<%= manga.metadata.author || 'Unknown' %>"
-  },
-  "genre": <%- JSON.stringify(manga.tags || []) %>,
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "<%= manga.metadata.rating || 0 %>",
-    "bestRating": "10",
-    "worstRating": "0",
-    "ratingCount": "<%= manga.views > 0 ? manga.views : 1 %>" 
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "<%= typeof siteName !== 'undefined' ? siteName : 'DoujinShi' %>",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %>/image/favicon.webp"
-    }
-  },
-  "datePublished": "<%= manga.metadata.created || '' %>"
-}
-</script>
 
-<main class="flex-grow w-full px-2 md:px-6 py-8">
-  
-  <nav class="text-sm text-gray-400 mb-4">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    "name": "<%= manga.title %>",
+    "alternateName": "<%= manga.alternativeTitle || '' %>",
+    "image": "<%= manga.thumb %>",
+    "description": "<%= manga.synopsis ? manga.synopsis.replace(/[\r\n]+/g, ' ') : '' %>",
+    "author": {
+      "@type": "Person",
+      "name": "<%= manga.metadata.author || 'Unknown' %>"
+    },
+    "genre": <%- JSON.stringify(manga.tags || []) %>,
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "<%= manga.metadata.rating || 0 %>",
+      "bestRating": "10",
+      "worstRating": "0",
+      "ratingCount": "<%= manga.views > 0 ? manga.views : 1 %>" 
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "<%= typeof siteName !== 'undefined' ? siteName : 'DoujinShi' %>",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "<%= typeof siteUrl !== 'undefined' ? siteUrl : '' %>/image/favicon.webp"
+      }
+    },
+    "datePublished": "<%= manga.metadata.created || '' %>"
+  }
+  </script>
+
+  <main class="flex-grow w-full px-2 md:px-6 py-8">
+    
+    <nav class="text-sm text-gray-400 mb-4">
       <a href="/" class="hover:text-blue-400">Home</a> <span class="mx-2">/</span>
       <span class="text-white"><%= manga.title %></span>
     </nav>
@@ -68,7 +69,7 @@
         <div class="w-full bg-gray-800 rounded-lg p-4 space-y-3 text-sm">
           <div class="flex justify-between border-b border-gray-700 pb-2">
             <span class="text-gray-400">Status</span>
-            <a href="/status/<%= manga?.metadata?.status ? manga.metadata.status.toLowerCase(): '' %>"
+            <a href="/status/<%= manga?.metadata?.status ? manga.metadata.status.toLowerCase() : '' %>"
               class="text-white hover:text-blue-400 font-medium">
               <%= manga?.metadata?.status || '-' %>
             </a>
@@ -83,9 +84,9 @@
 
           <div class="flex justify-between border-b border-gray-700 pb-2">
             <span class="text-gray-400">Type</span>
-            <a href="/type/<%= manga?.metadata?.type ? (typeof manga.metadata.type === 'object' ? manga.metadata.type.type.toLowerCase(): manga.metadata.type.toLowerCase()): '' %>"
+            <a href="/type/<%= manga?.metadata?.type ? (typeof manga.metadata.type === 'object' ? manga.metadata.type.type.toLowerCase() : manga.metadata.type.toLowerCase()) : '' %>"
               class="text-white hover:text-blue-400 font-medium">
-              <%= manga?.metadata?.type ? (typeof manga.metadata.type === 'object' ? manga.metadata.type.type: manga.metadata.type): '-' %>
+              <%= manga?.metadata?.type ? (typeof manga.metadata.type === 'object' ? manga.metadata.type.type : manga.metadata.type) : '-' %>
             </a>
           </div>
 
@@ -132,12 +133,21 @@
         <% } %>
 
         <h2 class="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-2 flex items-center justify-between">
-          <span> Daftar Chapter</span>
+          <span>Daftar Chapter</span>
           <span class="text-xs bg-blue-900 text-blue-200 px-2 py-1 rounded"><%= chapters.length %> Chapter</span>
         </h2>
 
         <div class="flex flex-col gap-2 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
           <% if (chapters.length > 0) { %>
+            
+            <% 
+               chapters.sort((a, b) => {
+                   const numA = parseFloat(String(a.chapter_index).replace(/[^0-9.]/g, '')) || 0;
+                   const numB = parseFloat(String(b.chapter_index).replace(/[^0-9.]/g, '')) || 0;
+                   return numA - numB;
+               });
+            %>
+
             <% chapters.forEach(chap => { %>
               <a href="/read/<%= manga.slug %>/<%= chap.slug %>"
                 onclick="saveHistory('<%= manga.slug %>', '<%= chap.slug %>')"
@@ -146,7 +156,7 @@
 
                 <div class="flex flex-col">
                   <span class="font-medium text-gray-200 group-hover:text-blue-400 text-sm transition">
-                    Chapter <%= chap.title %>
+                    Chapter<%= chap.title %>
                   </span>
                   <span class="text-[10px] text-gray-500 mt-0.5">Bahasa Indonesia</span>
                 </div>
@@ -158,9 +168,7 @@
             <% }) %>
           <% } else { %>
             <div class="text-center py-10 bg-gray-900/50 rounded-lg border border-dashed border-gray-700">
-              <p class="text-gray-500">
-                Belum ada chapter tersedia.
-              </p>
+              <p class="text-gray-500">Belum ada chapter tersedia.</p>
             </div>
           <% } %>
         </div>
@@ -185,8 +193,7 @@
                   <% } %>
                   
                   <div class="absolute bottom-0 left-0 bg-black/70 text-white text-[10px] px-2 py-1 rounded-tr-lg backdrop-blur-sm">
-                    <%= rec.metadata && rec.metadata.type ? 
-                        (typeof rec.metadata.type === 'object' ? rec.metadata.type.type : rec.metadata.type) : 'Manga' %>
+                    <%= rec.metadata && rec.metadata.type ? (typeof rec.metadata.type === 'object' ? rec.metadata.type.type : rec.metadata.type) : 'Manga' %>
                   </div>
 
                   <div class="absolute top-0 right-0 bg-yellow-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded-bl-lg shadow">
@@ -205,7 +212,8 @@
         </div>
       </div>
     <% } %>
-    </main>
+
+  </main>
 
   <%- include('footer') %>
 
