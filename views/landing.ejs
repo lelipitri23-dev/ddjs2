@@ -141,7 +141,11 @@
                                     <div class="absolute top-2 right-2 z-10">
                                       <span
                                         class="bg-gray-900/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded border border-gray-600 shadow-lg">
-                                        Ch. <%= manga.chapter_count || 0 %>
+                                        <% if (manga.latestChapter) { %>
+                                          Ch. <%= manga.latestChapter.chapter_index %>
+                                            <% } else { %>
+                                              Ch. ?
+                                              <% } %>
                                       </span>
                                     </div>
                                     <div
@@ -198,7 +202,11 @@
                                         <div class="absolute top-2 right-2 z-10">
                                           <span
                                             class="bg-gray-900/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded border border-gray-600 shadow-lg">
-                                            Ch. <%= manga.chapter_count || 0 %>
+                                            <% if (manga.latestChapter) { %>
+                                              Ch. <%= manga.latestChapter.chapter_index %>
+                                                <% } else { %>
+                                                  Ch. ?
+                                                  <% } %>
                                           </span>
                                         </div>
                                         <div
@@ -238,4 +246,4 @@
                           <% } %>
 
       </main>
-<%- include('footer') %>
+      <%- include('footer') %>

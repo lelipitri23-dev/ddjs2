@@ -82,6 +82,26 @@ async function attachChapterCounts(mangas) {
 }
 
 // ==========================================
+// HELPER: Ambil 1 Chapter Terbaru (Optimized)
+// ==========================================
+async function attachLatestChapter(mangas) {
+  return await Promise.all(mangas.map(async (m) => {
+    // Cari 1 chapter dengan index tertinggi (terbaru)
+    const latest = await Chapter.findOne({ manga_id: m._id })
+      .select('chapter_index slug createdAt') // Hanya ambil field penting (Hemat Memory)
+      .sort({ chapter_index: -1 })           // Urutkan dari yang terbesar
+      .lean();                               // Konversi ke object JS biasa (Cepat)
+
+    const mObj = m.toObject ? m.toObject() : m;
+    
+    // Masukkan data chapter ke dalam object manga
+    mObj.latestChapter = latest; 
+    
+    return mObj;
+  }));
+}
+
+// ==========================================
 // 2. MAIN ROUTES (DENGAN CACHE)
 // ==========================================
 
@@ -91,31 +111,38 @@ app.get('/', simpleCache(60), async (req, res) => {
     const limit = 24;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
-    const totalManga = await Manga.countDocuments();
-    let recents = await Manga.find().sort({
-      updatedAt: -1
-    }).skip(skip).limit(limit);
-    recents = await attachChapterCounts(recents);
-    let trending = await Manga.find().sort({
-      views: -1
-    }).limit(10);
-    trending = await attachChapterCounts(trending);
-    let manhwas = await Manga.find({
-      'metadata.type': {
-        $regex: 'manhwa', $options: 'i'
-      }
-    }).sort({
-      updatedAt: -1
-    }).limit(24);
-    manhwas = await attachChapterCounts(manhwas);
-    let doujinshis = await Manga.find({
-      'metadata.type': {
-        $regex: 'doujinshi', $options: 'i'
-      }
-    }).sort({
-      updatedAt: -1
-    }).limit(24);
-    doujinshis = await attachChapterCounts(doujinshis);
+    
+    // 1. Recents (Update Terbaru)
+    let recents = await Manga.find()
+      .select('title slug thumb metadata tags updatedAt') // Optimasi: Select field
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    // GANTI attachChapterCounts DENGAN attachLatestChapter
+    recents = await attachLatestChapter(recents); 
+
+    // 2. Trending (Biasanya tidak butuh chapter, tapi views)
+    let trending = await Manga.find()
+      .select('title slug thumb metadata views') // Optimasi
+      .sort({ views: -1 })
+      .limit(10);
+    // Trending tidak wajib pakai chapter, biarkan raw atau attachLatestChapter jika mau
+
+    // 3. Manhwa
+    let manhwas = await Manga.find({ 'metadata.type': { $regex: 'manhwa', $options: 'i' } })
+      .select('title slug thumb metadata')
+      .sort({ updatedAt: -1 })
+      .limit(24);
+    // GANTI attachChapterCounts DENGAN attachLatestChapter
+    manhwas = await attachLatestChapter(manhwas);
+
+    // 4. Doujinshi
+    let doujinshis = await Manga.find({ 'metadata.type': { $regex: 'doujinshi', $options: 'i' } })
+      .select('title slug thumb metadata')
+      .sort({ updatedAt: -1 })
+      .limit(24);
+    // GANTI attachChapterCounts DENGAN attachLatestChapter
+    doujinshis = await attachLatestChapter(doujinshis);
 
     res.render('landing', {
       mangas: recents,
@@ -123,9 +150,10 @@ app.get('/', simpleCache(60), async (req, res) => {
       manhwas: manhwas,
       doujinshis: doujinshis,
       title: `${res.locals.siteName} - Baca Komik Dewasa Terbaru Bahasa Indonesia`,
-      desc: `${res.locals.siteName} merupakan tempat baca komik manhwa18 terbaru dan Download Komik manhwa18 Sub Indo di ${res.locals.siteName}. ${res.locals.siteName} selalu update tercepat dan terlengkap di Indonesia..`
+      desc: `${res.locals.siteName} tempat baca komik...`
     });
   } catch (err) {
+    console.error(err); // Penting untuk debugging
     res.status(500).send(err.message);
   }
 });
