@@ -53,7 +53,7 @@ async function attachLatestChapter(mangas) {
 router.get('/manga', async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 20; // Support custom limit (e.g. for Sitemap)
+        const limit = parseInt(req.query.limit) || 36; // Support custom limit (e.g. for Sitemap)
         const skip = (page - 1) * limit;
         
         let query = {};
