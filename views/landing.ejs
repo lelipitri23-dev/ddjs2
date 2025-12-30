@@ -31,6 +31,11 @@
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .snap-x { -webkit-overflow-scrolling: touch; }
+  
+  /* Transisi halus untuk lazy load */
+  .lazy-image {
+    transition: opacity 0.5s ease-in-out;
+  }
 </style>
 
 <body class="flex flex-col min-h-screen bg-gray-900 text-gray-200 font-sans overflow-x-hidden relative">
@@ -59,6 +64,9 @@
       const hasManhwas = (typeof manhwas !== 'undefined' && manhwas.length > 0);
       const hasDoujinshis = (typeof doujinshis !== 'undefined' && doujinshis.length > 0);
       const hasContent = hasTrending || hasRecents || hasManhwas || hasDoujinshis;
+      
+      /* Placeholder transparan kecil (Base64) agar browser tidak error render image kosong */
+      const placeholderInfo = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
     %>
 
     <% if (hasContent) { %>
@@ -73,9 +81,14 @@
             <% trending.forEach(manga => { %>
               <div class="min-w-[130px] md:min-w-[180px] snap-start bg-gray-800 rounded-lg overflow-hidden shadow-md border border-gray-700 hover:border-gray-500 transition group relative">
                 <a href="/manga/<%= manga.slug %>" class="block h-full flex flex-col">
-                  <div class="h-44 md:h-64 overflow-hidden relative">
+                  <div class="h-44 md:h-64 overflow-hidden relative bg-gray-700">
                     <% if (manga.thumb) { %>
-                      <img src="<%= manga.thumb %>" alt="<%= manga.title %>" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" loading="lazy">
+                      <img 
+                        src="<%= placeholderInfo %>" 
+                        data-src="<%= manga.thumb %>" 
+                        alt="<%= manga.title %>" 
+                        class="w-full h-full object-cover group-hover:scale-110 transition duration-500 lazy-image opacity-0"
+                      >
                     <% } else { %>
                       <div class="w-full h-full bg-gray-700 flex items-center justify-center text-2xl"></div>
                     <% } %>
@@ -136,7 +149,12 @@
                 <a href="/manga/<%= manga.slug %>" class="block h-full">
                   <div class="h-52 md:h-72 bg-gray-700 relative overflow-hidden">
                     <% if (manga.thumb) { %>
-                      <img src="<%= manga.thumb %>" alt="<%= manga.title %>" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                      <img 
+                        src="<%= placeholderInfo %>"
+                        data-src="<%= manga.thumb %>" 
+                        alt="<%= manga.title %>" 
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500 lazy-image opacity-0"
+                      >
                     <% } else { %>
                       <div class="w-full h-full flex items-center justify-center text-4xl"></div>
                     <% } %>
@@ -184,7 +202,12 @@
                 <a href="/manga/<%= manga.slug %>" class="block h-full">
                   <div class="h-52 md:h-72 bg-gray-700 relative overflow-hidden">
                     <% if (manga.thumb) { %>
-                      <img src="<%= manga.thumb %>" alt="<%= manga.title %>" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                       <img 
+                        src="<%= placeholderInfo %>"
+                        data-src="<%= manga.thumb %>" 
+                        alt="<%= manga.title %>" 
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500 lazy-image opacity-0"
+                      >
                     <% } else { %>
                       <div class="w-full h-full flex items-center justify-center text-4xl"></div>
                     <% } %>
@@ -230,7 +253,12 @@
                 <a href="/manga/<%= manga.slug %>" class="block h-full">
                   <div class="h-52 md:h-72 bg-gray-700 relative overflow-hidden">
                     <% if (manga.thumb) { %>
-                      <img src="<%= manga.thumb %>" alt="<%= manga.title %>" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                       <img 
+                        src="<%= placeholderInfo %>"
+                        data-src="<%= manga.thumb %>" 
+                        alt="<%= manga.title %>" 
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500 lazy-image opacity-0"
+                      >
                     <% } else { %>
                       <div class="w-full h-full flex items-center justify-center text-4xl"></div>
                     <% } %>
@@ -274,5 +302,43 @@
   </main>
   
   <%- include('footer') %>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const lazyImages = document.querySelectorAll("img.lazy-image");
+
+      if ("IntersectionObserver" in window) {
+        const imageObserver = new IntersectionObserver(function(entries, observer) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              const image = entry.target;
+              // Pindahkan data-src ke src
+              image.src = image.dataset.src;
+              
+              // Tunggu gambar selesai load baru hilangkan opacity 0
+              image.onload = () => {
+                image.classList.remove("opacity-0");
+              };
+              
+              // Hapus pengamatan
+              imageObserver.unobserve(image);
+            }
+          });
+        }, {
+          rootMargin: "0px 0px 200px 0px" // Muat gambar 200px sebelum masuk layar
+        });
+
+        lazyImages.forEach(function(image) {
+          imageObserver.observe(image);
+        });
+      } else {
+        // Fallback untuk browser sangat lama (langsung muat semua)
+        lazyImages.forEach(function(image) {
+          image.src = image.dataset.src;
+          image.classList.remove("opacity-0");
+        });
+      }
+    });
+  </script>
 </body>
 </html>
